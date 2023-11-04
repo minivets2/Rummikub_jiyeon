@@ -36,8 +36,6 @@ public class CardManager : Singleton<CardManager>
                 break;
             }
         }
-        
-        Debug.Log(randomKey);
 
         return randomKey;
     }
