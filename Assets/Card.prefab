@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 13
+  m_text: 1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -227,9 +227,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a29dc8c4aa0e14e47a55f1f1bc992088, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textNumber: {fileID: 6550199992968909047}
   number: 0
-  color: {r: 0, g: 0, b: 0, a: 0}
+  colorType: 0
+  textNumber: {fileID: 6550199992968909047}
 --- !u!114 &5282533024593227653
 MonoBehaviour:
   m_ObjectHideFlags: 0

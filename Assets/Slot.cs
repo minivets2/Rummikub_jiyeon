@@ -1,19 +1,8 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Experimental.GlobalIllumination;
-
-public class CardInfo
-{
-    public int number;
-    public int color;
- 
-    public CardInfo(int number, int color)
-    {
-        this.number = number;
-        this.color = color;
-    }
-}
+using Vector2 = System.Numerics.Vector2;
 
 public class Slot : MonoBehaviour, IDropHandler
 {
@@ -22,34 +11,33 @@ public class Slot : MonoBehaviour, IDropHandler
         var otherCardTransform = eventData.pointerDrag.transform;
         otherCardTransform.SetParent(transform);
         otherCardTransform.localPosition = Vector3.zero;
+        
+        GameManager gameManager = GameManager.Instance;
+        gameManager.CheckOverlap();
     }
 
     public void DestroyChildCard()
     {
-        Transform childTransform = transform.Find("Card(Clone)");
+        if (transform.childCount == 0)
+            return;
 
-        if (childTransform != null)
-        {
-            Destroy(childTransform.gameObject);
-        }
+        Transform childTransform = transform.GetChild(0);
+        Destroy(childTransform.gameObject);
     }
 
-    public CardInfo CardInfo()
+    public Vector2 CardInfo()
     {
-        Transform childTransform = transform.Find("Card(Clone)");
-
-        if (childTransform != null)
+        if (transform.childCount == 0)
         {
-            Card card = childTransform.GetComponent<Card>();
-
-            if (card != null)
-            {
-                CardInfo cardInfo = new CardInfo(card.Number, (int)card.ColorType);
-                return cardInfo;
-            }
+            Vector2 nullInfo = new Vector2(100, 100);
+            return nullInfo;
         }
         
-        CardInfo nullInfo = new CardInfo(0, 0);
-        return nullInfo;
+        Transform childTransform = transform.GetChild(0);
+
+        Card card = childTransform.GetComponent<Card>();
+
+        Vector2 cardInfo = new Vector2(card.Number, (int)card.ColorType);
+        return cardInfo;
     }
 }

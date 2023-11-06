@@ -7,8 +7,7 @@ public enum CardColorType
     Blue,
     Red,
     Orange,
-    Black,
-    Joker
+    Black
 }
 
 public class Card : MonoBehaviour
@@ -28,46 +27,11 @@ public class Card : MonoBehaviour
         textNumber.color = SetCardColor(cardColor, ref colorType);
         number = cardNumber;
     }
-    
-    public void SetCardStatus(int cardNumber, int cardColor)
-    {
-        textNumber.text = cardNumber.ToString();
-        textNumber.color = SetCardColor(cardColor, ref colorType);
-        number = cardNumber;
-    }
-    
-    private Color SetCardColor(int cardColor, ref CardColorType colorType)
-    {
-        Color newColor = Color.clear;
-        colorType = CardColorType.Joker;
-        
-        switch (cardColor)
-        {
-            case 0:
-                newColor = Color.blue;
-                colorType = CardColorType.Blue;
-                break;
-            case 1:
-                newColor = Color.red;
-                colorType = CardColorType.Red;
-                break;
-            case 2:
-                newColor = new Color(1.0f, 0.647f, 0.0f);
-                colorType = CardColorType.Orange;
-                break;
-            case 3:
-                newColor = Color.black;
-                colorType = CardColorType.Black;
-                break;
-        }
-
-        return newColor;
-    }
 
     private Color SetCardColor(string cardColor, ref CardColorType colorType)
     {
         Color newColor = Color.clear;
-        colorType = CardColorType.Joker;
+        colorType = CardColorType.Black;
         
         switch (cardColor)
         {

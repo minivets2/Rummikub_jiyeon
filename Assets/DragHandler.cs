@@ -1,5 +1,3 @@
-using System;
-using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -8,6 +6,9 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     private CanvasGroup _canvasGroup;
     private Canvas _mainCanvas;
     private RectTransform _rectTransform;
+
+    private Transform _beginDragSlot;
+    private int _beginDragSlotSiblingIndex;
 
     private void Start()
     {
@@ -18,8 +19,9 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        var slotTransform = _rectTransform.parent;
-        slotTransform.SetAsLastSibling();
+        _beginDragSlot = _rectTransform.parent;
+        _beginDragSlotSiblingIndex = _beginDragSlot.GetSiblingIndex();
+        _beginDragSlot.SetAsLastSibling();
         _canvasGroup.blocksRaycasts = false;
     }
 
@@ -30,6 +32,7 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        _beginDragSlot.SetSiblingIndex(_beginDragSlotSiblingIndex);
         transform.localPosition = Vector3.zero;
         _canvasGroup.blocksRaycasts = true;
     }

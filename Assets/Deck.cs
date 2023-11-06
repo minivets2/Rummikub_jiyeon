@@ -1,16 +1,10 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
+using Vector2 = System.Numerics.Vector2;
 
 public class Deck : MonoBehaviour
 {
-    [SerializeField] private Slot[] slots;
-
     private List<CardInfo> card = new List<CardInfo>();
 
     public void NumberSortButtonClick()
@@ -21,7 +15,6 @@ public class Deck : MonoBehaviour
             .ThenBy(x => x.number)
             .ToList();
 
-        DestroyChildCard();
         ResetChildCard(sorted);
     }
 
@@ -33,36 +26,31 @@ public class Deck : MonoBehaviour
             .ThenBy(x => x.color)
             .ToList();
 
-        DestroyChildCard();
         ResetChildCard(sorted);
     }
 
     private void SetSlotList()
     {
+        GameManager gameManager = GameManager.Instance;
+        
         card.Clear();
 
-        foreach (var slot in slots)
+        foreach (var slot in gameManager.DeckSlot)
         {
-            CardInfo cardInfo = slot.CardInfo();
+            Vector2 _cardInfo = slot.CardInfo();
+            CardInfo cardInfo = new CardInfo((int)_cardInfo.X, (int)_cardInfo.Y);
 
-            if (cardInfo.number != 0)
+            if (cardInfo.number != 100)
             {
                 card.Add(cardInfo);
             }
         }
     }
 
-    private void DestroyChildCard()
-    {
-        foreach (var slot in slots)
-        {
-            slot.DestroyChildCard();
-        }
-    }
-
     private void ResetChildCard(List<CardInfo> sorted)
     {
         GameManager gameManager = GameManager.Instance;
+        
         gameManager.ResetCard(sorted);
     }
 }
