@@ -1,56 +1,56 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using Vector2 = System.Numerics.Vector2;
 
 public class Deck : MonoBehaviour
 {
-    private List<CardInfo> card = new List<CardInfo>();
+    [SerializeField] private List<GameObject> cards = new List<GameObject>();
 
     public void NumberSortButtonClick()
     {
         SetSlotList();
-
-        List<CardInfo> sorted = card.OrderBy(x => x.color)
-            .ThenBy(x => x.number)
+        
+        List<GameObject> sorted = cards.OrderBy(x => x.GetComponent<Card>().ColorType)
+            .ThenBy(x => x.GetComponent<Card>().Number)
             .ToList();
-
+        
         ResetChildCard(sorted);
     }
-
+    
     public void ColorSortButtonClick()
     {
         SetSlotList();
-
-        List<CardInfo> sorted = card.OrderBy(x => x.number)
-            .ThenBy(x => x.color)
+        
+        List<GameObject> sorted = cards.OrderBy(x => x.GetComponent<Card>().Number)
+            .ThenBy(x => x.GetComponent<Card>().ColorType)
             .ToList();
-
+        
         ResetChildCard(sorted);
     }
 
     private void SetSlotList()
     {
         GameManager gameManager = GameManager.Instance;
-        
-        card.Clear();
+
+        cards.Clear();
 
         foreach (var slot in gameManager.DeckSlot)
         {
-            Vector2 _cardInfo = slot.CardInfo();
-            CardInfo cardInfo = new CardInfo((int)_cardInfo.X, (int)_cardInfo.Y);
-
-            if (cardInfo.number != 100)
+            if (slot.transform.childCount > 0)
             {
-                card.Add(cardInfo);
+                GameObject child = slot.transform.GetChild(0).gameObject;
+                if (child != null) cards.Add(child);
             }
         }
     }
 
-    private void ResetChildCard(List<CardInfo> sorted)
+    private void ResetChildCard(List<GameObject> sorted)
     {
         GameManager gameManager = GameManager.Instance;
         
         gameManager.ResetCard(sorted);
     }
 }
+

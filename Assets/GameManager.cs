@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Vector2 = System.Numerics.Vector2;
 
-public class MyStructComparer : IEqualityComparer<CardInfo>
+public class MyClassComparer : IEqualityComparer<Card>
 {
-    public bool Equals(CardInfo x, CardInfo y)
+    public bool Equals(Card x, Card y)
     {
-        return (x.number == y.number) && (x.color == y.color);
+        return x.CardGuid == y.CardGuid;
     }
 
-    public int GetHashCode(CardInfo obj)
+    public int GetHashCode(Card obj)
     {
-        return obj.number.GetHashCode();
+        return obj.CardGuid.GetHashCode();
     }
 }
 
@@ -22,23 +22,38 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private Slot[] deckSlot;
     [SerializeField] private Card cardPrefab;
 
-    private List<CardInfo> _previousCardList = new List<CardInfo>();
-    private List<CardInfo> _newCardList = new List<CardInfo>();
+    [SerializeField] private List<GameObject> _previousPlayGround = new List<GameObject>();
+    
+    [SerializeField] private List<Card> _previousCardList = new List<Card>();
+    [SerializeField] private List<Card> _newCardList = new List<Card>();
+    [SerializeField] private List<Card> difference = new List<Card>();
 
+    public Slot[] PlayGroundSlot => playGroundSlot;
     public Slot[] DeckSlot => deckSlot;
     
     private bool _isResetCard = false;
 
     public void SaveCardList()
     {
+        _previousPlayGround.Clear();
         _previousCardList.Clear();
 
         foreach (var slot in playGroundSlot)
         {
-            Vector2 _cardInfo = slot.CardInfo();
-            CardInfo cardInfo = new CardInfo((int)_cardInfo.X, (int)_cardInfo.Y);
+            if (slot.transform.childCount > 0)
+            {
+                Transform child = slot.transform.GetChild(0);
 
-            _previousCardList.Add(cardInfo);
+                if (child != null)
+                {
+                    _previousPlayGround.Add(child.gameObject);
+                    _previousCardList.Add(child.gameObject.GetComponent<Card>());
+                }
+            }
+            else
+            {
+                _previousPlayGround.Add(null);
+            }
         }
     }
 
@@ -48,113 +63,45 @@ public class GameManager : Singleton<GameManager>
 
         foreach (var slot in playGroundSlot)
         {
-            Vector2 _cardInfo = slot.CardInfo();
-            CardInfo cardInfo = new CardInfo((int)_cardInfo.X, (int)_cardInfo.Y);
-
-            _newCardList.Add(cardInfo);
-        }
-
-        for (int i = 0; i < _previousCardList.Count; i++)
-        {
-            if (_previousCardList[i] == _newCardList[i])
+            if (slot.transform.childCount > 0)
             {
-                continue;
-            }
+                Transform child = slot.transform.GetChild(0);
 
-            playGroundSlot[i].DestroyChildCard();
-
-            if (_previousCardList[i].number == 100)
-            {
-                continue;
-            }
-            
-            var card = Instantiate(cardPrefab, playGroundSlot[i].transform);
-            int cardNumber = _previousCardList[i].number;
-            int cardColor = _previousCardList[i].color;
-            string color = "";
-            
-            switch (cardColor)
-            {
-                case 0:
-                    color = "B";
-                    break;
-                case 1:
-                    color = "R";
-                    break;
-                case 2:
-                    color = "O";
-                    break;
-                case 3:
-                    color = "K";
-                    break;
-            }
-            
-            card.SetCardStatus(cardNumber, color);
-            card.transform.localScale = Vector3.one;
-        }
-
-        int previousCount = 0;
-        int newsCount = 0;
-
-        for (int i = 0; i < _previousCardList.Count; i++)
-        {
-            if (_previousCardList[i].number != 100)
-            {
-                previousCount++;
-            }
-            
-            if (_newCardList[i].number != 100)
-            {
-                newsCount++;
+                if (child != null)
+                {
+                    _newCardList.Add(child.gameObject.GetComponent<Card>());
+                }
             }
         }
 
-        if (previousCount == newsCount)
-        {
-            return;
-        }
+        MyClassComparer comparer = new MyClassComparer();
+        difference = _newCardList.Except(_previousCardList, comparer).ToList();
 
-        MyStructComparer comparer = new MyStructComparer();
-
-        // 차집합을 계산
-        List<CardInfo> difference = _newCardList.Except(_previousCardList, comparer).ToList();
-
-        foreach (var item in difference)
+        for (int i = 0; i < difference.Count; i++)
         {
             int index = 0;
-            for (int i = 0; i < deckSlot.Length; i++)
+            for (int j = 0; j < deckSlot.Length; j++)
             {
-                if (deckSlot[i].transform.childCount == 0)
+                if (deckSlot[j].transform.childCount == 0)
                 {
-                    index = i;
+                    index = j;
                     break;
                 }
             }
-        
-            var card = Instantiate(cardPrefab, deckSlot[index].transform);
-            int cardNumber = item.number;
-            int cardColor = item.color;
-            string color = "";
             
-            switch (cardColor)
-            {
-                case 0:
-                    color = "B";
-                    break;
-                case 1:
-                    color = "R";
-                    break;
-                case 2:
-                    color = "O";
-                    break;
-                case 3:
-                    color = "K";
-                    break;
-            }
-            
-            card.SetCardStatus(cardNumber, color);
-            card.transform.localScale = Vector3.one;
+            difference[i].transform.SetParent(deckSlot[index].transform);
+            difference[i].GetComponent<RectTransform>().anchoredPosition = UnityEngine.Vector2.zero;
         }
+
+        for (int i = 0; i < _previousPlayGround.Count; i++)
+        {
+            if (_previousPlayGround[i] != null)
+            {
+                _previousPlayGround[i].transform.SetParent(playGroundSlot[i].transform);
+                _previousPlayGround[i].GetComponent<RectTransform>().anchoredPosition = UnityEngine.Vector2.zero;
+            }
+        }
+        
     }
 
     public void CheckOverlap()
@@ -187,42 +134,16 @@ public class GameManager : Singleton<GameManager>
             }
         }
     }
-
-    public void ResetCard(List<CardInfo> sorted)
+    
+    public void ResetCard(List<GameObject> sorted)
     {
-        foreach (var slot in deckSlot)
-        {
-            slot.DestroyChildCard();
-        }
-        
         for (int i = 0; i < sorted.Count; i++)
         {
-            var card = Instantiate(cardPrefab, deckSlot[i].transform);
-            int cardNumber = sorted[i].number;
-            int cardColor = sorted[i].color;
-            string color = "";
-            
-            switch (cardColor)
-            {
-                case 0:
-                    color = "B";
-                    break;
-                case 1:
-                    color = "R";
-                    break;
-                case 2:
-                    color = "O";
-                    break;
-                case 3:
-                    color = "K";
-                    break;
-            }
-            
-            card.SetCardStatus(cardNumber, color);
-            card.transform.localScale = Vector3.one;
+            sorted[i].transform.SetParent(deckSlot[i].transform);
+            sorted[i].GetComponent<RectTransform>().anchoredPosition = UnityEngine.Vector2.zero;
         }
     }
-    
+
     public void NewCardButtonClick()
     {
         CardManager cardManager = CardManager.Instance;
@@ -242,9 +163,25 @@ public class GameManager : Singleton<GameManager>
         
         string number = cardStatus.Substring(1, cardStatus.Length - 1);
         string color = cardStatus.Substring(0, 1);
+        CardColorType colorType = CardColorType.Black;
         
-        card.SetCardStatus(int.Parse(number), color);
+        switch (color)
+        {
+            case "B":
+                colorType = CardColorType.Blue;
+                break;
+            case "R":
+                colorType = CardColorType.Red;
+                break;
+            case "O":
+                colorType = CardColorType.Orange;
+                break;
+            case "K":
+                colorType = CardColorType.Black;
+                break;
+        }
         
+        card.SetCardStatus(int.Parse(number), colorType);
         card.transform.localScale = Vector3.one;
     }
 }
