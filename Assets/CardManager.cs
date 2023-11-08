@@ -27,16 +27,32 @@ public class CardManager : Singleton<CardManager>
     
     public void NewCardButtonClick()
     {
-        if (PlaceManager.Instance.PlayerSlots.Count == 0)
+        Vector2 vector2;
+
+        while (true)
         {
+            vector2 = PlaceManager.Instance.FindEmptyPlayerSlotIndex();
+            
+            if ((int)vector2.X == 100)
+            {
+                PlaceManager.Instance.CreateNewSlot();
+            }
+            else
+            {
+                break;
+            }
+        }
+        
+        string cardStatus = GetRandomCardStatus();
+
+        if (cardStatus == "")
+        {
+            //뽑을 카드가 없을때
             return;
         }
         
-        Vector2 vector2 = PlaceManager.Instance.FindEmptyPlayerSlotIndex();
-
         var card = Instantiate(cardPrefab, PlaceManager.Instance.PlayerSlots[(int)vector2.X][(int)vector2.Y].transform);
-        string cardStatus = GetRandomCardStatus();
-        
+     
         string number = cardStatus.Substring(1, cardStatus.Length - 1);
         string color = cardStatus.Substring(0, 1);
         CardColorType colorType = CardColorType.Black;

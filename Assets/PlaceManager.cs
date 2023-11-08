@@ -23,8 +23,12 @@ public class PlaceManager : Singleton<PlaceManager>
     [SerializeField] private PlayerPlace playerPlace;
     [SerializeField] private SharePlace sharePlace;
     
-    [Header("Slots")]
+    [Header("SharedSlots")]
     [SerializeField] private Slot[] sharedSlots;
+
+    [Header("PlayerSlots")]
+    [SerializeField] private RectTransform playerSlot_Line0;
+    [SerializeField] private RectTransform playerSlot_Line1;
     [SerializeField] private List<Slot> playerSlots_Line0;
     [SerializeField] private List<Slot> playerSlots_Line1;
     private List<List<Slot>> _playerSlots = new List<List<Slot>>();
@@ -41,7 +45,7 @@ public class PlaceManager : Singleton<PlaceManager>
     public Slot[] SharedSlots => sharedSlots;
     public List<List<Slot>> PlayerSlots => _playerSlots;
 
-    private void Start()
+    private new void Awake()
     {
         _playerSlots.Add(playerSlots_Line0);
         _playerSlots.Add(playerSlots_Line1);
@@ -144,10 +148,40 @@ public class PlaceManager : Singleton<PlaceManager>
         }
     }
 
+    public void CreateNewSlot()
+    {
+        UnityEngine.Vector2 size1 = playerSlot_Line0.sizeDelta;
+        size1.x += 38;
+        playerSlot_Line0.sizeDelta = size1;
+
+        Transform pos1 = playerSlots_Line0[^1].transform;
+        var slot1 = Instantiate(slotPrefab, playerSlot_Line0.transform);
+        slot1.transform.localPosition = pos1.localPosition + new Vector3(38, 0,0);
+        playerSlots_Line0.Add(slot1);
+        
+        UnityEngine.Vector2 size2 = playerSlot_Line1.sizeDelta;
+        size2.x += 38;
+        playerSlot_Line1.sizeDelta = size1;
+
+        Transform pos2 = playerSlots_Line1[^1].transform;
+        var slot2 = Instantiate(slotPrefab, playerSlot_Line1.transform);
+        slot2.transform.localPosition = pos2.localPosition + new Vector3(38, 0,0);
+        playerSlots_Line1.Add(slot2);
+
+        if (size1.x > 570)
+        {
+            playerSlot_Line0.localScale = Vector3.one;
+            playerSlot_Line1.localScale = Vector3.one;
+            
+            playerSlot_Line0.localScale *= 570 / size1.x;
+            playerSlot_Line1.localScale *= 570 / size1.x;
+        }
+    }
+
     public Vector2 FindEmptyPlayerSlotIndex()
     {
-        int index1 = 0;
-        int index2 = 0;
+        int index1 = 100;
+        int index2 = 100;
 
         for (int j = 0; j < _playerSlots.Count; j++)
         {
