@@ -1,19 +1,21 @@
-using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Vector2 = System.Numerics.Vector2;
 
 public class Slot : MonoBehaviour, IDropHandler
 {
+    [SerializeField] private int lineIndex;
+
+    public int LineIndex => lineIndex;
+    
     public void OnDrop(PointerEventData eventData)
     {
         var otherCardTransform = eventData.pointerDrag.transform;
         otherCardTransform.SetParent(transform);
         otherCardTransform.localPosition = Vector3.zero;
         
-        GameManager gameManager = GameManager.Instance;
-        gameManager.CheckOverlap();
+        PlaceManager placeManager = PlaceManager.Instance;
+        placeManager.CheckOverlap();
     }
 
     public void DestroyChildCard()

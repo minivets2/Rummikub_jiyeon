@@ -1,11 +1,16 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Random = System.Random;
+using Vector2 = System.Numerics.Vector2;
 
 public class CardManager : Singleton<CardManager>
 {
-    public Dictionary<string, int> Card = new Dictionary<string, int>()
+    [Header("Card Prefab")]
+    [SerializeField] private Card cardPrefab;
+    
+    private Dictionary<string, int> Card = new Dictionary<string, int>()
     {
         {"B1", 2}, {"B2", 2},{"B3", 2},{"B4", 2},{"B5", 2},{"B6", 2},
         {"B7", 2}, {"B8", 2},{"B9", 2},{"B10", 2},{"B11", 2},{"B12", 2},{"B13", 2},
@@ -19,8 +24,44 @@ public class CardManager : Singleton<CardManager>
     };
 
     private int cardCount = 106;
+    
+    public void NewCardButtonClick()
+    {
+        if (PlaceManager.Instance.PlayerSlots.Count == 0)
+        {
+            return;
+        }
+        
+        Vector2 vector2 = PlaceManager.Instance.FindEmptyPlayerSlotIndex();
 
-    public string GetRandomCardStatus()
+        var card = Instantiate(cardPrefab, PlaceManager.Instance.PlayerSlots[(int)vector2.X][(int)vector2.Y].transform);
+        string cardStatus = GetRandomCardStatus();
+        
+        string number = cardStatus.Substring(1, cardStatus.Length - 1);
+        string color = cardStatus.Substring(0, 1);
+        CardColorType colorType = CardColorType.Black;
+        
+        switch (color)
+        {
+            case "B":
+                colorType = CardColorType.Blue;
+                break;
+            case "R":
+                colorType = CardColorType.Red;
+                break;
+            case "O":
+                colorType = CardColorType.Orange;
+                break;
+            case "K":
+                colorType = CardColorType.Black;
+                break;
+        }
+        
+        card.SetCardStatus(int.Parse(number), colorType);
+        card.transform.localScale = Vector3.one;
+    }
+
+    private string GetRandomCardStatus()
     {
         string randomKey = "";
 
