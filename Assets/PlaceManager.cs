@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using Vector2 = System.Numerics.Vector2;
 
 public class CardComparer : IEqualityComparer<Card>
@@ -19,40 +20,52 @@ public class CardComparer : IEqualityComparer<Card>
 
 public class PlaceManager : Singleton<PlaceManager>
 {
-    [Header("Place")]
-    [SerializeField] private PlayerPlace playerPlace;
-    [SerializeField] private SharePlace sharePlace;
-    
-    [Header("SharedSlots")]
+    [Header("Share Place")]
+    [SerializeField] private GameObject sharePlace;
+    private List<List<Slot>> _shareSlots = new List<List<Slot>>();
+
     [SerializeField] private Slot[] sharedSlots;
 
-    [Header("PlayerSlots")]
-    [SerializeField] private RectTransform playerSlot_Line0;
-    [SerializeField] private RectTransform playerSlot_Line1;
-    [SerializeField] private List<Slot> playerSlots_Line0;
-    [SerializeField] private List<Slot> playerSlots_Line1;
+    [Header("Player Place")]
+    [SerializeField] private PlayerPlace playerPlace;
     private List<List<Slot>> _playerSlots = new List<List<Slot>>();
     
     [Header("Prefab")]
     [SerializeField] private Slot slotPrefab;
-    
+    [SerializeField] private Line PlayerPlaceLinePrefab;
+    [SerializeField] private Line SharePlaceLinePrefab;
+
     private List<GameObject> _previousPlayGround = new List<GameObject>();
     private List<Card> _previousCardList = new List<Card>();
     private List<Card> _newCardList = new List<Card>();
     private List<Card> difference = new List<Card>();
 
-    public SharePlace SharePlace => sharePlace;
+    private int _addSlotCount = 0;
+    
+    public GameObject SharePlace => sharePlace;
     public Slot[] SharedSlots => sharedSlots;
     public List<List<Slot>> PlayerSlots => _playerSlots;
 
     private new void Awake()
     {
-        _playerSlots.Add(playerSlots_Line0);
-        _playerSlots.Add(playerSlots_Line1);
+        for (int i = 0; i < 4; i++)
+        {
+            var line = Instantiate(SharePlaceLinePrefab, sharePlace.transform);
+            _shareSlots.Add(line.Slots);
+        }
+
+        for (int i = 0; i < 2; i++)
+        {
+            var line = Instantiate(PlayerPlaceLinePrefab, playerPlace.transform);
+            _playerSlots.Add(line.Slots);
+        }
+
+        GameManager.Instance.Init();
     }
 
     public void SaveCardList()
     {
+        /*
         _previousPlayGround.Clear();
         _previousCardList.Clear();
 
@@ -73,6 +86,7 @@ public class PlaceManager : Singleton<PlaceManager>
                 _previousPlayGround.Add(null);
             }
         }
+        */
     }
 
     public void ResetCardList()
@@ -116,7 +130,6 @@ public class PlaceManager : Singleton<PlaceManager>
 
     public void CheckOverlap()
     {
-        //CheckOverlap(sharedSlots);
         CheckOverlap(_playerSlots);
     }
 
@@ -132,7 +145,11 @@ public class PlaceManager : Singleton<PlaceManager>
             
                     if (child != null)
                     {
-                        if (j == slot[i].Count - 1)
+                        if (i == 0 && j == slot[i].Count - 1)
+                        {
+                            child.SetParent(slot[1][0].transform);
+                        }
+                        else if (i == 1 && j == slot[i].Count - 1)
                         {
                             child.SetParent(slot[0][0].transform);
                         }
@@ -148,33 +165,81 @@ public class PlaceManager : Singleton<PlaceManager>
         }
     }
 
-    public void CreateNewSlot()
+    public void SharePlaceExpansion()
     {
-        UnityEngine.Vector2 size1 = playerSlot_Line0.sizeDelta;
-        size1.x += 38;
-        playerSlot_Line0.sizeDelta = size1;
-
-        Transform pos1 = playerSlots_Line0[^1].transform;
-        var slot1 = Instantiate(slotPrefab, playerSlot_Line0.transform);
-        slot1.transform.localPosition = pos1.localPosition + new Vector3(38, 0,0);
-        playerSlots_Line0.Add(slot1);
-        
-        UnityEngine.Vector2 size2 = playerSlot_Line1.sizeDelta;
-        size2.x += 38;
-        playerSlot_Line1.sizeDelta = size1;
-
-        Transform pos2 = playerSlots_Line1[^1].transform;
-        var slot2 = Instantiate(slotPrefab, playerSlot_Line1.transform);
-        slot2.transform.localPosition = pos2.localPosition + new Vector3(38, 0,0);
-        playerSlots_Line1.Add(slot2);
-
-        if (size1.x > 570)
+        for (int i = 0; i < _shareSlots.Count; i++)
         {
-            playerSlot_Line0.localScale = Vector3.one;
-            playerSlot_Line1.localScale = Vector3.one;
+            //열추가
+            UnityEngine.Vector2 size = sharePlace.transform.GetChild(i).GetComponent<RectTransform>().sizeDelta;
+            size.x += 38;
+            sharePlace.transform.GetChild(i).GetComponent<RectTransform>().sizeDelta = size;
             
-            playerSlot_Line0.localScale *= 570 / size1.x;
-            playerSlot_Line1.localScale *= 570 / size1.x;
+            var slot = Instantiate(slotPrefab, _shareSlots[i][0].transform.parent);
+            slot.transform.localPosition = _shareSlots[i][^1].transform.localPosition + new Vector3(38, 0,0);
+            _shareSlots[i].Add(slot);
+        }
+
+        _addSlotCount = _shareSlots[0].Count;
+        
+        //행추가
+        var line = Instantiate(SharePlaceLinePrefab, sharePlace.transform);
+
+        while (true)
+        {
+            UnityEngine.Vector2 size = line.GetComponent<RectTransform>().sizeDelta;
+            size.x += 38;
+            line.GetComponent<RectTransform>().sizeDelta = size;
+            
+            var slot = Instantiate(slotPrefab, line.transform);
+            slot.transform.localPosition = line.Slots[^1].transform.localPosition + new Vector3(38, 0,0);
+            line.Slots.Add(slot);
+
+            if (line.Slots.Count == _addSlotCount)
+                break;
+        }
+        
+        _shareSlots.Add(line.Slots);
+        
+        //sharePlace 크기 변경
+        UnityEngine.Vector2 sharePlaceSize = sharePlace.GetComponent<RectTransform>().sizeDelta;
+        sharePlaceSize.x += 38;
+        sharePlaceSize.y += 52;
+        sharePlace.GetComponent<RectTransform>().sizeDelta = sharePlaceSize;
+        
+        // 크기 조정
+        if (sharePlace.GetComponent<RectTransform>().sizeDelta.x > 608)
+        {
+            float x = sharePlace.GetComponent<RectTransform>().sizeDelta.x;
+            sharePlace.GetComponent<RectTransform>().localScale = Vector3.one;
+            sharePlace.GetComponent<RectTransform>().localScale *=
+                608 / x;
+        }
+    }
+
+    public void PlayerPlaceExpansion()
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            UnityEngine.Vector2 size = playerPlace.transform.GetChild(i).GetComponent<RectTransform>().sizeDelta;
+            size.x += 38;
+            playerPlace.transform.GetChild(i).GetComponent<RectTransform>().sizeDelta = size;
+            
+            Transform pos = _playerSlots[i][^1].transform;
+            var slot = Instantiate(slotPrefab, playerPlace.transform.GetChild(i).GetComponent<RectTransform>().transform);
+            slot.transform.localPosition = pos.localPosition + new Vector3(38, 0,0);
+            
+            _playerSlots[i].Add(slot);
+        }
+
+        if (playerPlace.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.x > 570)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                float x = playerPlace.transform.GetChild(i).GetComponent<RectTransform>().sizeDelta.x;
+                playerPlace.transform.GetChild(i).GetComponent<RectTransform>().localScale = Vector3.one;
+                playerPlace.transform.GetChild(i).GetComponent<RectTransform>().localScale *=
+                    570 / x;   
+            }
         }
     }
 

@@ -35,6 +35,11 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         {
             _beginDragLine.GetComponent<HorizontalLayoutGroup>().enabled = false;   
         }
+
+        if (_beginDragLine.parent.GetComponent<VerticalLayoutGroup>())
+        {
+            _beginDragLine.parent.GetComponent<VerticalLayoutGroup>().enabled = false;   
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -52,6 +57,11 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         if (_beginDragLine.GetComponent<HorizontalLayoutGroup>())
         {
            _beginDragLine.GetComponent<HorizontalLayoutGroup>().enabled = true;   
+        }
+        
+        if (_beginDragLine.parent.GetComponent<VerticalLayoutGroup>())
+        {
+            _beginDragLine.parent.GetComponent<VerticalLayoutGroup>().enabled = true;   
         }
     }
 }

@@ -4,7 +4,7 @@ public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private Player[] players;
 
-    private void Start()
+    public void Init()
     {
         players[0].StartTurn();
         PlaceManager.Instance.SaveCardList();

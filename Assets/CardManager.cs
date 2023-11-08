@@ -35,7 +35,7 @@ public class CardManager : Singleton<CardManager>
             
             if ((int)vector2.X == 100)
             {
-                PlaceManager.Instance.CreateNewSlot();
+                PlaceManager.Instance.PlayerPlaceExpansion();
             }
             else
             {

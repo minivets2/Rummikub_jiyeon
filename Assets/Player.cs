@@ -23,6 +23,7 @@ public class Player : MonoBehaviour
                 countTimePanel.SetActive(false);
 
                 PlaceManager placeManager = PlaceManager.Instance;
+                /*
                 if (!placeManager.SharePlace.CheckComplete())
                 {
                     placeManager.ResetCardList();
@@ -31,6 +32,7 @@ public class Player : MonoBehaviour
                 {
                     placeManager.SaveCardList();
                 }
+                */
             }
         }
     }
