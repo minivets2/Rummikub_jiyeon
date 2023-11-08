@@ -13,7 +13,7 @@ public class Slot : MonoBehaviour, IDropHandler
         otherCardTransform = eventData.pointerDrag.transform;
         otherCardTransform.SetParent(transform);
         otherCardTransform.localPosition = Vector3.zero;
-
+        otherCardTransform.GetComponent<RectTransform>().localScale = Vector3.one;
         PlaceManager.Instance.CheckOverlap();
     }
 

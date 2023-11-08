@@ -5,9 +5,9 @@ using UnityEngine.UI;
 public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     private CanvasGroup _canvasGroup;
-    private Canvas _mainCanvas;
     private RectTransform _rectTransform;
-
+    private Vector3 _offset;
+    private RectTransform _canvasRectTransform;
     private Transform _beginDragSlot;
     private Transform _beginDragLine;
     private int _beginDragSlotSiblingIndex;
@@ -16,8 +16,8 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     private void Start()
     {
         _rectTransform = GetComponent<RectTransform>();
-        _mainCanvas = GetComponentInParent<Canvas>();
         _canvasGroup = GetComponent<CanvasGroup>();
+        _canvasRectTransform = GetComponentInParent<Canvas>().transform as RectTransform;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -27,9 +27,13 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         _beginDragSlotSiblingIndex = _beginDragSlot.GetSiblingIndex();
         _beginDragLineSiblingIndex = _beginDragLine.GetSiblingIndex();
         
+        transform.GetComponent<RectTransform>().localScale /= _beginDragLine.GetComponent<RectTransform>().localScale.x;
+        transform.GetComponent<RectTransform>().localScale /= _beginDragLine.parent.GetComponent<RectTransform>().localScale.x;
+        
         _beginDragSlot.SetAsLastSibling();
         _beginDragLine.SetAsLastSibling();;
         _canvasGroup.blocksRaycasts = false;
+        _offset = transform.position - GetMouseWorldPos(eventData);
 
         if (_beginDragLine.GetComponent<HorizontalLayoutGroup>())
         {
@@ -44,7 +48,7 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnDrag(PointerEventData eventData)
     {
-        _rectTransform.anchoredPosition += eventData.delta / _mainCanvas.scaleFactor;
+        transform.position = GetMouseWorldPos(eventData) + _offset;
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -63,5 +67,12 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         {
             _beginDragLine.parent.GetComponent<VerticalLayoutGroup>().enabled = true;   
         }
+    }
+    
+    private Vector3 GetMouseWorldPos(PointerEventData eventData)
+    {
+        Vector3 mousePosition = eventData.position;
+        mousePosition.z = -_canvasRectTransform.position.z;
+        return Camera.main.ScreenToWorldPoint(mousePosition);
     }
 }
