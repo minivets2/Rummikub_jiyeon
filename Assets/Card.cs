@@ -3,6 +3,7 @@ using TMPro;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
+using UnityEngine.UI;
 
 public enum CardColorType
 {
@@ -17,9 +18,12 @@ public class Card : MonoBehaviour
     [SerializeField][ReadOnly] private int number;
     [SerializeField][ReadOnly] private CardColorType colorType;
     [SerializeField] private TMP_Text textNumber;
+    [SerializeField] private Image image;
     [SerializeField][ReadOnly] private string cardGuid;
     
-    private Sprite _resourceImage;
+    [Header("Joker")]
+    [SerializeField] private Sprite jokerSprite_black;
+    [SerializeField] private Sprite jokerSprite_red;
     
     public int Number => number;
     public CardColorType ColorType => colorType;
@@ -36,6 +40,18 @@ public class Card : MonoBehaviour
         textNumber.text = cardNumber.ToString();
         textNumber.color = SetCardColor(cardColor, ref colorType);
         number = cardNumber;
+        image.gameObject.SetActive(false);
+
+        if (cardNumber == 20 && colorType == CardColorType.Black)
+        {
+            image.gameObject.SetActive(true);
+            image.sprite = jokerSprite_black;
+        }
+        else if (cardNumber == 20 && colorType == CardColorType.Red)
+        {
+            image.gameObject.SetActive(true);
+            image.sprite = jokerSprite_red;
+        }
     }
 
     private Color SetCardColor(CardColorType cardColor, ref CardColorType colorType)

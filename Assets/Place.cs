@@ -3,6 +3,19 @@ using UnityEngine;
 
 public class Place : MonoBehaviour
 {
+    public bool CheckContainMatchCardList(List<List<GameObject>> matchCards, GameObject card)
+    {
+        for (int i = 0; i < matchCards.Count; i++)
+        {
+            if (matchCards[i].Contains(card))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    
     public bool AllNumbersEqual(List<Card> list)
     {
         int firstValue = 0;

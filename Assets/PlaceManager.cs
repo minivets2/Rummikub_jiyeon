@@ -135,33 +135,32 @@ public class PlaceManager : Singleton<PlaceManager>
 
     private void CheckOverlap(List<List<Slot>> slot)
     {
-        for (int i = 0; i < slot.Count; i++)
+        while (true)
         {
-            for (int j = 0; j < slot[i].Count; j++)
-            {
-                if (slot[i][j].transform.childCount > 1)
-                {
-                    Transform child = slot[i][j].transform.GetChild(0);
+            int count = 0;
             
-                    if (child != null)
+            for (int i = 0; i < slot.Count; i++)
+            {
+                for (int j = 0; j < slot[i].Count; j++)
+                {
+                    if (slot[i][j].transform.childCount > 1)
                     {
-                        if (i == 0 && j == slot[i].Count - 1)
+                        Transform child = slot[i][j].transform.GetChild(0);
+            
+                        if (child != null)
                         {
-                            child.SetParent(slot[1][0].transform);
+                            if (i == 0 && j == slot[i].Count - 1) child.SetParent(slot[1][0].transform);
+                            else if (i == 1 && j == slot[i].Count - 1) child.SetParent(slot[0][0].transform);
+                            else child.SetParent(slot[i][j+1].transform);
+
+                            child.localPosition = Vector3.zero;
+                            count++;
                         }
-                        else if (i == 1 && j == slot[i].Count - 1)
-                        {
-                            child.SetParent(slot[0][0].transform);
-                        }
-                        else
-                        {
-                            child.SetParent(slot[i][j+1].transform);
-                        }
-                    
-                        child.localPosition = Vector3.zero;
-                    }
-                }   
+                    } 
+                }
             }
+
+            if (count == 0) break;
         }
     }
 
