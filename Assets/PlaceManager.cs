@@ -1,8 +1,7 @@
-using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
+using UnityEngine.UI;
 using Vector2 = System.Numerics.Vector2;
 
 public class CardComparer : IEqualityComparer<Card>
@@ -128,6 +127,37 @@ public class PlaceManager : Singleton<PlaceManager>
         
     }
 
+    public void CheckPlaceSize()
+    {
+        if (playerPlace.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.x <= 380) return;
+
+        while (true)
+        {
+            int count = 0;
+            for (int i = 0; i < _playerSlots.Count; i++)
+            {
+                if (_playerSlots[i][^1].transform.childCount == 0) 
+                    count++;
+            }
+
+            if (count == 2)
+            {
+                for (int i = 0; i < _playerSlots.Count(); i++)
+                {
+                    UnityEngine.Vector2 size = playerPlace.transform.GetChild(i).GetComponent<RectTransform>().sizeDelta;
+                    size.x -= 38;
+                    playerPlace.transform.GetChild(i).GetComponent<RectTransform>().sizeDelta = size;
+                    
+                    Destroy(_playerSlots[i][^1].gameObject);
+                    _playerSlots[i].RemoveAt(_playerSlots[i].Count - 1);
+                }
+            }
+            else break;
+        }
+        
+        CheckPlaceImageSize();
+    }
+
     public void CheckOverlap()
     {
         CheckOverlap(_playerSlots);
@@ -150,7 +180,11 @@ public class PlaceManager : Singleton<PlaceManager>
                         if (child != null)
                         {
                             if (i == 0 && j == slot[i].Count - 1) child.SetParent(slot[1][0].transform);
-                            else if (i == 1 && j == slot[i].Count - 1) child.SetParent(slot[0][0].transform);
+                            else if (i == 1 && j == slot[i].Count - 1)
+                            {
+                                Vector2 vector2 = FindEmptyPlayerSlotIndex();
+                                child.SetParent(slot[(int)vector2.X][(int)vector2.Y].transform);
+                            }
                             else child.SetParent(slot[i][j+1].transform);
 
                             child.localPosition = Vector3.zero;
@@ -230,16 +264,7 @@ public class PlaceManager : Singleton<PlaceManager>
             _playerSlots[i].Add(slot);
         }
 
-        if (playerPlace.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.x > 570)
-        {
-            for (int i = 0; i < 2; i++)
-            {
-                float x = playerPlace.transform.GetChild(i).GetComponent<RectTransform>().sizeDelta.x;
-                playerPlace.transform.GetChild(i).GetComponent<RectTransform>().localScale = Vector3.one;
-                playerPlace.transform.GetChild(i).GetComponent<RectTransform>().localScale *=
-                    570 / x;   
-            }
-        }
+        CheckPlaceImageSize();
     }
 
     public Vector2 FindEmptyPlayerSlotIndex()
@@ -261,6 +286,33 @@ public class PlaceManager : Singleton<PlaceManager>
         }
         
         return new Vector2(index1, index2);
+    }
+
+    private void CheckPlaceImageSize()
+    {
+        if (playerPlace.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.x > 570)
+        {
+            playerPlace.Image.enabled = true;
+            
+            for (int i = 0; i < 2; i++)
+            {
+                playerPlace.transform.GetChild(i).GetComponent<Image>().enabled = false;
+                float x = playerPlace.transform.GetChild(i).GetComponent<RectTransform>().sizeDelta.x;
+                playerPlace.transform.GetChild(i).GetComponent<RectTransform>().localScale = Vector3.one;
+                playerPlace.transform.GetChild(i).GetComponent<RectTransform>().localScale *=
+                    570 / x;   
+            }
+        }
+        else
+        {
+            playerPlace.Image.enabled = false;
+
+            for (int i = 0; i < 2; i++)
+            {
+                playerPlace.transform.GetChild(i).GetComponent<Image>().enabled = true;
+                playerPlace.transform.GetChild(i).GetComponent<RectTransform>().localScale = Vector3.one;
+            }
+        }
     }
 }
 

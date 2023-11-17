@@ -15,6 +15,7 @@ public class Slot : MonoBehaviour, IDropHandler
         otherCardTransform.localPosition = Vector3.zero;
         otherCardTransform.GetComponent<RectTransform>().localScale = Vector3.one;
         PlaceManager.Instance.CheckOverlap();
+        PlaceManager.Instance.CheckPlaceSize();
     }
 
     public void DestroyChildCard()

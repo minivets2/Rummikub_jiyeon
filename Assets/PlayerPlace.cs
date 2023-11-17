@@ -1,14 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Analytics;
+using UnityEngine.UI;
 
 public class PlayerPlace : Place
 {
+    [SerializeField] private Image _image;
     [SerializeField] private List<GameObject> _cards = new List<GameObject>();
     private List<List<GameObject>> _matchCards = new List<List<GameObject>>();
 
+    public Image Image => _image;
+    
     public void NumberSortButtonClick()
     {
         GetSlotList();
@@ -17,8 +19,8 @@ public class PlayerPlace : Place
             .ThenBy(x => x.GetComponent<Card>().Number)
             .ToList();
 
-        CheckMatchBlocks(sorted, true);
-        CheckOtherBlocks(sorted);
+        CheckMatchCards(sorted, true);
+        CheckOtherCards(sorted);
 
         SortPlayerPlace(sorted);
     }
@@ -31,8 +33,8 @@ public class PlayerPlace : Place
             .ThenBy(x => x.GetComponent<Card>().ColorType)
             .ToList();
         
-        CheckMatchBlocks(sorted, false);
-        CheckOtherBlocks(sorted);
+        CheckMatchCards(sorted, false);
+        CheckOtherCards(sorted);
         
         SortPlayerPlace(sorted);
     }
@@ -54,7 +56,7 @@ public class PlayerPlace : Place
         }
     }
 
-    private void CheckMatchBlocks(List<GameObject> sorted, bool isNumberSort)
+    private void CheckMatchCards(List<GameObject> sorted, bool isNumberSort)
     {
         _matchCards.Clear();
         
@@ -112,7 +114,7 @@ public class PlayerPlace : Place
         return false;
     }
 
-    private void CheckOtherBlocks(List<GameObject> sorted)
+    private void CheckOtherCards(List<GameObject> sorted)
     {
         if (_matchCards.Count == 0)
         {

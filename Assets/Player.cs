@@ -2,6 +2,7 @@ using System;
 using TMPro;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -9,15 +10,17 @@ public class Player : MonoBehaviour
     [SerializeField][ReadOnly] private float countTime;
     [SerializeField] private GameObject countTimePanel;
     [SerializeField] private TMP_Text textNumber;
+    [SerializeField] private Slider slider;
     
     private void Update()
     {
         if (startTurn)
         {
-            countTime -= Time.deltaTime;
+            countTime += Time.deltaTime;
+            slider.value = Mathf.FloorToInt(countTime);
             textNumber.text = Mathf.FloorToInt(countTime).ToString();
 
-            if (countTime < 0)
+            if (countTime > slider.maxValue)
             {
                 startTurn = false;
                 countTimePanel.SetActive(false);
@@ -39,10 +42,12 @@ public class Player : MonoBehaviour
 
     public void StartTurn()
     {
-        countTime = 30;
+        countTime = 0;
         startTurn = true;
         countTimePanel.SetActive(true);
         textNumber.text = Mathf.FloorToInt(countTime).ToString();
+        slider.maxValue = 30;
+        slider.value = Mathf.FloorToInt(countTime);
     }
     
     
