@@ -2,6 +2,7 @@ using System;
 using Firebase;
 using Firebase.Auth;
 using Firebase.Extensions;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -11,13 +12,13 @@ public class AuthManager : MonoBehaviour
     public bool IsFirebaseReady { get; private set; }
     public bool IsSignInOnProgress { get; private set; }
     
-    [SerializeField] private InputField emailField;
-    [SerializeField] private InputField passwordField;
+    [SerializeField] private TMP_InputField emailField;
+    [SerializeField] private TMP_InputField passwordField;
     [SerializeField] private Button signInButton;
 
-    public static FirebaseApp FirebaseApp;
-    public static FirebaseAuth FirebaseAuth;
-    public static AuthResult User;
+    public static FirebaseApp _firebaseApp;
+    public static FirebaseAuth _firebaseAuth;
+    public static FirebaseUser _user;
 
     public void Start()
     {
@@ -36,8 +37,8 @@ public class AuthManager : MonoBehaviour
             {
                 IsFirebaseReady = true;
 
-                FirebaseApp = FirebaseApp.DefaultInstance;
-                FirebaseAuth = FirebaseAuth.DefaultInstance;
+                _firebaseApp = FirebaseApp.DefaultInstance;
+                _firebaseAuth = FirebaseAuth.DefaultInstance;
             }
 
             signInButton.interactable = IsFirebaseReady;
@@ -47,13 +48,13 @@ public class AuthManager : MonoBehaviour
 
     public void SignIn()
     {
-        if (!IsFirebaseReady || IsSignInOnProgress || User != null)
+        if (!IsFirebaseReady || IsSignInOnProgress || _user != null)
             return;
 
         IsSignInOnProgress = true;
         signInButton.interactable = false;
 
-        FirebaseAuth.SignInWithEmailAndPasswordAsync(emailField.text, passwordField.text).ContinueWithOnMainThread(task =>
+        _firebaseAuth.SignInWithEmailAndPasswordAsync(emailField.text, passwordField.text).ContinueWithOnMainThread(task =>
         {
             Debug.Log($"Sign in status : {task.Status}");
 
@@ -70,8 +71,8 @@ public class AuthManager : MonoBehaviour
             }
             else
             {
-                User = task.Result;
-                Debug.Log("login");
+                _user = task.Result.User;
+                Debug.Log(_user.Email);
                 SceneManager.LoadScene("Lobby");
             }
         }
