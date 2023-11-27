@@ -18,7 +18,7 @@ public class GameReady : Singleton<GameReady>
 
         if (count == 0)
         {
-            Debug.LogError("ddd");
+            FindObjectOfType<GameReadyUI>().gameObject.SetActive(false);
         }
     }
 

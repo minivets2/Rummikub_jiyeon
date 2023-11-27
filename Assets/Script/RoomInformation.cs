@@ -8,6 +8,7 @@ public class RoomInformation : MonoBehaviour
     [SerializeField] private Image playerImage;
     [SerializeField] private List<Sprite> playerImages;
     [SerializeField] private TMP_Text playersCount;
+    [SerializeField] private List<Button> buttons;
 
     private int _playerImageIndex;
     private int _playersCount;
@@ -25,6 +26,14 @@ public class RoomInformation : MonoBehaviour
         _playerImageIndex = 0;
         _playersCount = 1;
         playersCount.text = _playersCount + "명";
+    }
+
+    public void SetButton(bool value)
+    {
+        for (int i = 0; i < buttons.Count; i++)
+        {
+            buttons[i].interactable = value;
+        }
     }
 
     public void PlayersInfoLeftButtonClick()

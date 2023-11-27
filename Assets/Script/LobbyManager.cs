@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Photon.Realtime;
 using Photon.Pun;
@@ -9,6 +10,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] private TMP_InputField inputField_PlayerId;
     [SerializeField] private RoomInformation roomInformation;
+    [SerializeField] public GameObject players;
     private readonly string gameVersion = "1";
     public TMP_Text connectionInfoText;
     public Button joinButton;
@@ -19,12 +21,26 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         PhotonNetwork.ConnectUsingSettings();
 
         joinButton.interactable = false;
+        roomInformation.SetButton(false);
         connectionInfoText.text = "Connecting To Master Server...";
+    }
+
+    private void Update()
+    {
+        if (PhotonNetwork.CountOfRooms == 0)
+        {
+            players.gameObject.SetActive(true);
+        }
+        else
+        {
+            players.gameObject.SetActive(false);
+        }
     }
 
     public override void OnConnectedToMaster()
     {
         joinButton.interactable = true;
+        roomInformation.SetButton(true);
         connectionInfoText.text = "Online : Connected to Master Server";
     }
 
@@ -66,7 +82,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
         connectionInfoText.text = "There is no empty room, Creating new Room.";
-        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 2 });
+        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 4 });
     }
 
     public override void OnJoinedRoom()

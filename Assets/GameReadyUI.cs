@@ -1,3 +1,4 @@
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,6 @@ public class GameReadyUI : MonoBehaviour
     public void ReadyButtonClick()
     {
         readyButton.interactable = false;
-        GameReady.Instance.SetReadyCount();
+        FindObjectOfType<GameReady>().SetReadyCount();
     }
 }
