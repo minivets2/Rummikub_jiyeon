@@ -30,7 +30,7 @@ public class GameReady : MonoBehaviourPunCallbacks, IPunObservable
         }
         else
         {
-            this.count = (int)stream.ReceiveNext();
+            count = (int)stream.ReceiveNext();
         }
     }
 }
