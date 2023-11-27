@@ -15,6 +15,7 @@ public class GameManager : Singleton<GameManager>
         {
             //공유플레이스 생성
             PhotonNetwork.Instantiate(cardManager.name, Vector3.zero, Quaternion.identity);
+            GameReady.Instance.InitGamePlayersCount(RoomManager.Instance.playersCount);
         }
     }
 

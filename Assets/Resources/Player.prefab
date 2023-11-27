@@ -556,6 +556,7 @@ MonoBehaviour:
   countTimePanel: {fileID: 3296432518644011243}
   textNumber: {fileID: 3296432519545844696}
   slider: {fileID: 3296432518441288661}
+  placeManager: {fileID: 2928270736565563662}
 --- !u!1 &3296432519066574957
 GameObject:
   m_ObjectHideFlags: 0
@@ -839,6 +840,7 @@ GameObject:
   - component: {fileID: 3296432519255441074}
   - component: {fileID: 3296432519255441077}
   - component: {fileID: 3296432519255441076}
+  - component: {fileID: 2928270736565563662}
   m_Layer: 5
   m_Name: PlayerPlace
   m_TagString: Untagged
@@ -944,6 +946,24 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2928270736565563662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3296432519255441086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fee4e79042b341d4e97085fd19f3c3e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sharePlace: {fileID: 0}
+  sharedSlots: []
+  playerPlace: {fileID: 3296432519255441074}
+  slotPrefab: {fileID: 4932206966331953606, guid: 4be7e83caae143447a81b7362589adac, type: 3}
+  PlayerPlaceLinePrefab: {fileID: 4803927982720235017, guid: 57f1f688c5e64d14a857724a32310f0f, type: 3}
+  SharePlaceLinePrefab: {fileID: 5852557778280388829, guid: 350972dd6d5315d49976b0262a7de967, type: 3}
 --- !u!1 &3296432519312715842
 GameObject:
   m_ObjectHideFlags: 0

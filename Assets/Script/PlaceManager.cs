@@ -45,12 +45,12 @@ public class PlaceManager : Singleton<PlaceManager>
     public Slot[] SharedSlots => sharedSlots;
     public List<List<Slot>> PlayerSlots => _playerSlots;
 
-    private new void Awake()
+    public void InitPlayerPlace()
     {
         for (int i = 0; i < 4; i++)
         {
-            var line = Instantiate(SharePlaceLinePrefab, sharePlace.transform);
-            _shareSlots.Add(line.Slots);
+            //var line = Instantiate(SharePlaceLinePrefab, sharePlace.transform);
+            //_shareSlots.Add(line.Slots);
         }
 
         for (int i = 0; i < 2; i++)
@@ -58,8 +58,6 @@ public class PlaceManager : Singleton<PlaceManager>
             var line = Instantiate(PlayerPlaceLinePrefab, playerPlace.transform);
             _playerSlots.Add(line.Slots);
         }
-
-        GameManager.Instance.Init();
     }
 
     public void SaveCardList()

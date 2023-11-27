@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Photon.Pun;
 using UnityEngine;
 using Random = System.Random;
 using Vector2 = System.Numerics.Vector2;
 
-public class CardManager : MonoBehaviour
+public class CardManager : Singleton<CardManager>
 {
     [Header("Card Prefab")]
     [SerializeField] private Card cardPrefab;

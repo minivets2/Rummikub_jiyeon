@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject countTimePanel;
     [SerializeField] private TMP_Text textNumber;
     [SerializeField] private Slider slider;
+    [SerializeField] private PlaceManager placeManager;
     
     private void Update()
     {
@@ -44,15 +45,21 @@ public class Player : MonoBehaviour
 
     public void InitPlayerInfo()
     {
+        playerID.text = RoomManager.Instance.playerId;
+        playerImage.sprite = RoomManager.Instance.playerImage;
+        placeManager.InitPlayerPlace();
+        startTurn = false;
+    }
+
+    public void PlayerTurn()
+    {
         countTime = 0;
         startTurn = true;
         countTimePanel.SetActive(true);
         textNumber.text = Mathf.FloorToInt(countTime).ToString();
         slider.maxValue = 30;
         slider.value = Mathf.FloorToInt(countTime);
-        
-        playerID.text = RoomManager.Instance.playerId;
-        playerImage.sprite = RoomManager.Instance.playerImage;
+
     }
     
     
