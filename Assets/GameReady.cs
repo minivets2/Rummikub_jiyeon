@@ -1,3 +1,4 @@
+using System;
 using Photon.Pun;
 using UnityEngine;
 
@@ -22,6 +23,13 @@ public class GameReady : MonoBehaviourPunCallbacks, IPunObservable
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        throw new System.NotImplementedException();
+        if (stream.IsWriting)
+        {
+            stream.SendNext(count);
+        }
+        else
+        {
+            this.count = (int)stream.ReceiveNext();
+        }
     }
 }
