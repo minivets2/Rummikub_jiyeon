@@ -14,6 +14,7 @@ public class AuthManager : MonoBehaviour
     
     [SerializeField] private TMP_InputField emailField;
     [SerializeField] private TMP_InputField passwordField;
+    [SerializeField] private TMP_Text errorMessage;
     [SerializeField] private Button signInButton;
 
     public static FirebaseApp _firebaseApp;
@@ -23,6 +24,7 @@ public class AuthManager : MonoBehaviour
     public void Start()
     {
         signInButton.interactable = false;
+        errorMessage.text = "";
 
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
         {
@@ -63,7 +65,7 @@ public class AuthManager : MonoBehaviour
 
             if (task.IsFaulted)
             {
-                Debug.LogError(task.Exception);
+                errorMessage.text = "로그인 정보가 틀렸습니다.";
             }
             else if (task.IsCanceled)
             {
@@ -71,6 +73,7 @@ public class AuthManager : MonoBehaviour
             }
             else
             {
+                errorMessage.text = "";
                 _user = task.Result.User;
                 Debug.Log(_user.Email);
                 SceneManager.LoadScene("Lobby");
