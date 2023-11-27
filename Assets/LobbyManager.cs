@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using Photon.Realtime;
 using Photon.Pun;
 using UnityEngine.UI;
@@ -8,7 +8,6 @@ using UnityEngine;
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] private TMP_InputField inputField_PlayerId;
-    
     private readonly string gameVersion = "1";
     public TMP_Text connectionInfoText;
     public Button joinButton;
@@ -40,7 +39,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         joinButton.interactable = false;
 
-        if (PhotonNetwork.IsConnected && inputField_PlayerId.text.Length != 0)
+        if (PhotonNetwork.IsConnected && inputField_PlayerId.text.Length != 0 && inputField_PlayerId.text.Length <= 3)
         {
             connectionInfoText.text = "Connecting to Random Room...";
             RoomManager.Instance.SetPlayerId(inputField_PlayerId.text);
@@ -48,7 +47,12 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         }
         else if (PhotonNetwork.IsConnected && inputField_PlayerId.text.Length == 0)
         {
-            connectionInfoText.text = "Please enter your ID.";
+            connectionInfoText.text = "플레이어 아이디를 입력해주세요.";
+            joinButton.interactable = true;
+        }
+        else if (PhotonNetwork.IsConnected && inputField_PlayerId.text.Length > 3)
+        {
+            connectionInfoText.text = "플레이어 아이디를 3글자 이하로 작성하세요.";
             joinButton.interactable = true;
         }
         else

@@ -12,7 +12,7 @@ public class PlayerNameText : MonoBehaviour
 
         if (AuthManager._user != null)
         {
-            _nameText.text = $"Hi! {AuthManager._user.Email}";
+            _nameText.text = AuthManager._user.Email;
         }
         else
         {
