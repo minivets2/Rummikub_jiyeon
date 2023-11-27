@@ -1,14 +1,9 @@
 using Photon.Pun;
 using UnityEngine;
 
-public class GameReady : Singleton<GameReady>
+public class GameReady : MonoBehaviourPunCallbacks, IPunObservable
 {
     [SerializeField] private int count;
-
-    private void Start()
-    {
-        PhotonNetwork.ConnectUsingSettings();
-    }
 
     public void InitGamePlayersCount(int count)
     {
@@ -25,4 +20,8 @@ public class GameReady : Singleton<GameReady>
         }
     }
 
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        throw new System.NotImplementedException();
+    }
 }
