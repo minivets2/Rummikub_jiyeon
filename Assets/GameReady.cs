@@ -11,6 +11,7 @@ public class GameReady : MonoBehaviourPunCallbacks, IPunObservable
         this.count = count;
     }
     
+    [PunRPC]
     public void SetReadyCount()
     {
         count--;
