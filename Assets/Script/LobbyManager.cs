@@ -82,7 +82,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
         connectionInfoText.text = "There is no empty room, Creating new Room.";
-        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 4 });
+        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = roomInformation.PlayersCount });
     }
 
     public override void OnJoinedRoom()

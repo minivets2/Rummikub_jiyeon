@@ -6,7 +6,6 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private Transform playerPosition;
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private GameObject cardManager;
-    [SerializeField] private GameObject gameReady;
 
     private void Start()
     {
@@ -16,8 +15,6 @@ public class GameManager : Singleton<GameManager>
         {
             //공유플레이스 생성
             PhotonNetwork.Instantiate(cardManager.name, Vector3.zero, Quaternion.identity);
-            var gameReadyObj = PhotonNetwork.Instantiate(gameReady.name, Vector3.zero, Quaternion.identity);
-            gameReadyObj.GetComponent<GameReady>().InitGamePlayersCount(RoomManager.Instance.playersCount);
         }
     }
 

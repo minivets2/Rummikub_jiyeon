@@ -1,14 +1,20 @@
+using System;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GameReadyUI : MonoBehaviour
 {
-    [SerializeField] private Button readyButton;
-    
-    public void ReadyButtonClick()
+    public void Update()
     {
-        readyButton.interactable = false;
-        FindObjectOfType<GameReady>().SetReadyCount();
+        if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
+        {
+            gameObject.SetActive(false);
+        }
+    }
+
+    public void LeaveButtonClick()
+    {
+        PhotonNetwork.LoadLevel("Lobby");
     }
 }
