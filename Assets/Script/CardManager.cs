@@ -5,7 +5,7 @@ using UnityEngine;
 using Random = System.Random;
 using Vector2 = System.Numerics.Vector2;
 
-public class CardManager : Singleton<CardManager>
+public class CardManager : MonoBehaviour
 {
     [Header("Card Prefab")]
     [SerializeField] private Card cardPrefab;
