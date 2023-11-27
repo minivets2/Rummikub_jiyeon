@@ -5,6 +5,8 @@ public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private Transform playerPosition;
     [SerializeField] private GameObject playerPrefab;
+    [SerializeField] private Transform cardManagerPosition;
+    [SerializeField] private GameObject cardManager;
 
     private void Start()
     {
@@ -13,6 +15,7 @@ public class GameManager : Singleton<GameManager>
         if (PhotonNetwork.IsMasterClient)
         {
             //공유플레이스 생성
+            PhotonNetwork.Instantiate(cardManager.name, cardManagerPosition.position, cardManagerPosition.rotation);
         }
     }
 
