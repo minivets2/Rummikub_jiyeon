@@ -1,11 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 
 public class GameReady : Singleton<GameReady>
 {
     [SerializeField] private int count;
+
+    private void Start()
+    {
+        PhotonNetwork.ConnectUsingSettings();
+    }
 
     public void InitGamePlayersCount(int count)
     {
