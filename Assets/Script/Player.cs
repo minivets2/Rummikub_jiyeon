@@ -1,13 +1,15 @@
-using System;
 using TMPro;
-using Unity.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField][ReadOnly] private bool startTurn;
-    [SerializeField][ReadOnly] private float countTime;
+    [Header("player info")]
+    [SerializeField] private Image playerImage;
+    [SerializeField] private TMP_Text playerID;
+
+    [SerializeField][Unity.Collections.ReadOnly] private bool startTurn;
+    [SerializeField][Unity.Collections.ReadOnly] private float countTime;
     [SerializeField] private GameObject countTimePanel;
     [SerializeField] private TMP_Text textNumber;
     [SerializeField] private Slider slider;
@@ -40,7 +42,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void StartTurn()
+    public void InitPlayerInfo()
     {
         countTime = 0;
         startTurn = true;
@@ -48,6 +50,9 @@ public class Player : MonoBehaviour
         textNumber.text = Mathf.FloorToInt(countTime).ToString();
         slider.maxValue = 30;
         slider.value = Mathf.FloorToInt(countTime);
+        
+        playerID.text = RoomManager.Instance.playerId;
+        playerImage.sprite = RoomManager.Instance.playerImage;
     }
     
     

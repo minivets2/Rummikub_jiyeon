@@ -1,11 +1,10 @@
-using System;
-using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
-    [SerializeField] private List<GameObject> players;
+    [SerializeField] private Transform playerPosition;
+    [SerializeField] private GameObject playerPrefab;
 
     private void Start()
     {
@@ -21,12 +20,8 @@ public class GameManager : Singleton<GameManager>
     {
         var localPlayerIndex = PhotonNetwork.LocalPlayer.ActorNumber - 1;
 
-        for (int i = 0; i < players.Count; i++)
-        {
-            players[i].gameObject.SetActive(false);
-            
-            if (i == localPlayerIndex) players[i].gameObject.SetActive(true);
-        }
+        var player = Instantiate(playerPrefab, playerPosition);
+        player.GetComponent<Player>().InitPlayerInfo();
     }
 
     public void Init()

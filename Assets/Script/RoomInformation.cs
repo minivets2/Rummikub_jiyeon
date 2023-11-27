@@ -9,12 +9,20 @@ public class RoomInformation : MonoBehaviour
     [SerializeField] private List<Sprite> playerImages;
     [SerializeField] private TMP_Text playersCount;
 
-    private int _index;
+    private int _playerImageIndex;
     private int _playersCount;
+
+    public int PlayerImageIndex => _playerImageIndex;
+    public int PlayersCount => _playersCount;
+
+    public Sprite GetPlayerImage()
+    {
+        return playerImages[PlayerImageIndex];
+    }
 
     private void Start()
     {
-        _index = 0;
+        _playerImageIndex = 0;
         _playersCount = 1;
         playersCount.text = _playersCount + "명";
     }
@@ -39,19 +47,19 @@ public class RoomInformation : MonoBehaviour
 
     public void CharacterInfoLeftButtonClick()
     {
-        _index--;
+        _playerImageIndex--;
 
-        if (_index == -1) _index = 0;
+        if (_playerImageIndex == -1) _playerImageIndex = 0;
 
-        playerImage.sprite = playerImages[_index];
+        playerImage.sprite = playerImages[_playerImageIndex];
     }
     
     public void CharacterInfoRightButtonClick()
     {
-        _index++;
+        _playerImageIndex++;
 
-        if (_index == playerImages.Count) _index = playerImages.Count - 1;
+        if (_playerImageIndex == playerImages.Count) _playerImageIndex = playerImages.Count - 1;
 
-        playerImage.sprite = playerImages[_index];
+        playerImage.sprite = playerImages[_playerImageIndex];
     }
 }

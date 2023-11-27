@@ -8,6 +8,7 @@ using UnityEngine;
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] private TMP_InputField inputField_PlayerId;
+    [SerializeField] private RoomInformation roomInformation;
     private readonly string gameVersion = "1";
     public TMP_Text connectionInfoText;
     public Button joinButton;
@@ -42,7 +43,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsConnected && inputField_PlayerId.text.Length != 0 && inputField_PlayerId.text.Length <= 3)
         {
             connectionInfoText.text = "Connecting to Random Room...";
-            RoomManager.Instance.SetPlayerId(inputField_PlayerId.text);
+            RoomManager.Instance.SetPlayerInfomation(inputField_PlayerId.text, roomInformation.GetPlayerImage(), roomInformation.PlayersCount);
             PhotonNetwork.JoinRandomRoom();
         }
         else if (PhotonNetwork.IsConnected && inputField_PlayerId.text.Length == 0)
