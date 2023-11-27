@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameReady : MonoBehaviourPunCallbacks, IPunObservable
 {
     [SerializeField] private int count;
+    [SerializeField] private PhotonView pv;
 
     public void InitGamePlayersCount(int count)
     {
@@ -14,6 +15,8 @@ public class GameReady : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     public void SetReadyCount()
     {
+        if (!pv.IsMine) return;
+        
         count--;
 
         if (count == 0)

@@ -16,10 +16,9 @@ public class GameManager : Singleton<GameManager>
         {
             //공유플레이스 생성
             PhotonNetwork.Instantiate(cardManager.name, Vector3.zero, Quaternion.identity);
+            var gameReadyObj = PhotonNetwork.Instantiate(gameReady.name, Vector3.zero, Quaternion.identity);
+            gameReadyObj.GetComponent<GameReady>().InitGamePlayersCount(RoomManager.Instance.playersCount);
         }
-        
-        var gameReadyObj = PhotonNetwork.Instantiate(gameReady.name, Vector3.zero, Quaternion.identity);
-        gameReadyObj.GetComponent<GameReady>().InitGamePlayersCount(RoomManager.Instance.playersCount);
     }
 
     private void SpawnPlayer()
