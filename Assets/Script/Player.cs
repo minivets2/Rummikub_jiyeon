@@ -10,9 +10,8 @@ public class Player : MonoBehaviour
     [SerializeField] private int playerIndex;
     [SerializeField] private Image playerImage;
     [SerializeField] private TMP_Text playerID;
-
-    [SerializeField][Unity.Collections.ReadOnly] private bool startTurn;
-    [SerializeField][Unity.Collections.ReadOnly] private float countTime;
+    
+    [Header("UI")]
     [SerializeField] private GameObject countTimePanel;
     [SerializeField] private TMP_Text textNumber;
     [SerializeField] private Slider slider;
@@ -20,19 +19,21 @@ public class Player : MonoBehaviour
     [SerializeField] private Button newCardButton;
 
     private PhotonView _photonView;
+    private bool _startTurn;
+    private float _countTime;
     
     public delegate void EndTurnEvent(int index);
     public static EndTurnEvent endTurnEvent;
 
     private void Update()
     {
-        if (startTurn)
+        if (_startTurn)
         {
-            countTime += Time.deltaTime;
-            slider.value = Mathf.FloorToInt(countTime);
-            textNumber.text = Mathf.FloorToInt(countTime).ToString();
+            _countTime += Time.deltaTime;
+            slider.value = Mathf.FloorToInt(_countTime);
+            textNumber.text = Mathf.FloorToInt(_countTime).ToString();
 
-            if (countTime > slider.maxValue)
+            if (_countTime > slider.maxValue)
             {
                 EndTurn();
                 endTurnEvent?.Invoke(playerIndex);
@@ -46,25 +47,33 @@ public class Player : MonoBehaviour
         playerID.text = RoomManager.Instance.playerId;
         playerImage.sprite = RoomManager.Instance.playerImage;
         PlaceManager.Instance.InitPlayerPlace(playerPlace);
-        startTurn = false;
+        _startTurn = false;
         slider.maxValue = 10;
     }
 
     public void StartTurn()
     {
-        countTime = 0;
-        startTurn = true;
+        _countTime = 0;
+        _startTurn = true;
         countTimePanel.SetActive(true);
-        textNumber.text = Mathf.FloorToInt(countTime).ToString();
-        slider.value = Mathf.FloorToInt(countTime);
+        textNumber.text = Mathf.FloorToInt(_countTime).ToString();
+        slider.value = Mathf.FloorToInt(_countTime);
         newCardButton.interactable = true;
     }
     
     public void EndTurn()
     {
-        startTurn = false;
+        _countTime = 0;
+        _startTurn = false;
         countTimePanel.SetActive(false);
+        slider.value = Mathf.FloorToInt(_countTime);
         newCardButton.interactable = false;
+    }
+
+    public void NewCardButtonClick()
+    {
+        EndTurn();
+        endTurnEvent?.Invoke(playerIndex);
     }
     
     

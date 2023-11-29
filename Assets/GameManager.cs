@@ -13,7 +13,7 @@ public class GameManager : Singleton<GameManager>
 
     [Header("Prefab")]
     [SerializeField] private GameObject playerPrefab;
-    [SerializeField] private GameObject cardManager;
+    [SerializeField] private GameObject sharePlace;
     
     private int _startPlayerIndex;
     
@@ -33,8 +33,7 @@ public class GameManager : Singleton<GameManager>
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            //공유플레이스 생성
-            //PhotonNetwork.Instantiate(cardManager.name, Vector3.zero, Quaternion.identity);
+            PhotonNetwork.Instantiate(sharePlace.name, new Vector3(), Quaternion.identity);
         }
     }
 
@@ -46,6 +45,8 @@ public class GameManager : Singleton<GameManager>
 
     private void NextTurn(int index)
     {
+        photonView.RPC("UpdatedShuffledCards_RPC", RpcTarget.AllBufferedViaServer, CardManager.Instance.NewCard(), index);
+        
         index++;
 
         if (PhotonNetwork.PlayerList.Length == index) index = 0;
@@ -71,12 +72,20 @@ public class GameManager : Singleton<GameManager>
             photonView.RPC("EndTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
         }
     }
+    
+    public void SpawnSharePlace()
+    {
+        var player =PhotonNetwork.Instantiate(playerPrefab.name, new Vector3(), Quaternion.identity);
+        player.transform.SetParent(playerPosition);
+        player.transform.localPosition = Vector3.zero;
+        player.transform.localScale = Vector3.one;
+        player.GetComponent<Player>().InitPlayerInfo(PhotonNetwork.LocalPlayer.ActorNumber -1);
+        this.player = player.GetComponent<Player>();
+    }
 
     [PunRPC]
     public void StartTurn(int index)
     {
-        Debug.Log(index);
-        
         if (index == PhotonNetwork.LocalPlayer.ActorNumber - 1) player.StartTurn();
     }
     
