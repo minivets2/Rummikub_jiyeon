@@ -7,8 +7,9 @@ public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private Player player;
     [SerializeField] private PhotonView photonView;
-    
+
     [Header("Init")]
+    [SerializeField] private Transform sharePlacePosition;
     [SerializeField] private Transform playerPosition;
 
     [Header("Prefab")]
@@ -33,7 +34,10 @@ public class GameManager : Singleton<GameManager>
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            PhotonNetwork.Instantiate(sharePlace.name, new Vector3(), Quaternion.identity);
+            var sp = PhotonNetwork.Instantiate(sharePlace.name, new Vector3(), Quaternion.identity);
+            sp.transform.SetParent(sharePlacePosition);
+            player.transform.localPosition = new Vector3(32, 56,0);
+            player.transform.localScale = Vector3.one;
         }
     }
 

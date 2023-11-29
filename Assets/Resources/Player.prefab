@@ -553,8 +553,6 @@ MonoBehaviour:
   playerIndex: 0
   playerImage: {fileID: 3296432518670598157}
   playerID: {fileID: 3296432519320027338}
-  startTurn: 0
-  countTime: 0
   countTimePanel: {fileID: 3296432518644011243}
   textNumber: {fileID: 3296432519545844696}
   slider: {fileID: 3296432518441288661}
