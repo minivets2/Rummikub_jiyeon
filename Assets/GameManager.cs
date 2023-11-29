@@ -6,7 +6,8 @@ using Random = System.Random;
 public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private Player player;
-
+    [SerializeField] private PhotonView photonView;
+    
     [Header("Init")]
     [SerializeField] private Transform playerPosition;
 
@@ -14,7 +15,6 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private GameObject cardManager;
     
-    private PhotonView _photonView;
     private int _startPlayerIndex;
     
     private void OnEnable()
@@ -40,8 +40,7 @@ public class GameManager : Singleton<GameManager>
 
     private void StartGame()
     {
-        _photonView = GetComponent<PhotonView>();
-        _photonView.RPC("SpawnGamePlayer_RPC", RpcTarget.AllBufferedViaServer, new object[] { });
+        photonView.RPC("SpawnGamePlayer_RPC", RpcTarget.AllBufferedViaServer, new object[] { });
         StuffThattMasterClientDoes();
     }
 
@@ -51,7 +50,7 @@ public class GameManager : Singleton<GameManager>
 
         if (PhotonNetwork.PlayerList.Length == index) index = 0;
 
-        _photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, index);
+        photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, index);
     }
 
     private void StuffThattMasterClientDoes()
@@ -64,18 +63,20 @@ public class GameManager : Singleton<GameManager>
             {
                 for (int j = 0; j < 12; j++)
                 {
-                    _photonView.RPC("UpdatedShuffledCards_RPC", RpcTarget.AllBufferedViaServer, CardManager.Instance.NewCard(), i);
+                    photonView.RPC("UpdatedShuffledCards_RPC", RpcTarget.AllBufferedViaServer, CardManager.Instance.NewCard(), i);
                 }
             }
 
-            _photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
-            _photonView.RPC("EndTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
+            photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
+            photonView.RPC("EndTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
         }
     }
 
     [PunRPC]
     public void StartTurn(int index)
     {
+        Debug.Log(index);
+        
         if (index == PhotonNetwork.LocalPlayer.ActorNumber - 1) player.StartTurn();
     }
     
