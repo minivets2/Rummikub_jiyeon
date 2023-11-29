@@ -18,10 +18,9 @@ public class Player : MonoBehaviour
     [SerializeField] private PlayerPlace playerPlace;
     [SerializeField] private Button newCardButton;
 
-    private int _currentPlayerIndex;
     private PhotonView _photonView;
     
-    public delegate void EndTurnEvent();
+    public delegate void EndTurnEvent(int index);
     public static EndTurnEvent endTurnEvent;
 
     private void Update()
@@ -35,7 +34,7 @@ public class Player : MonoBehaviour
             if (countTime > slider.maxValue)
             {
                 EndTurn();
-                endTurnEvent?.Invoke();
+                endTurnEvent?.Invoke(playerIndex);
             }
         }
     }
@@ -50,14 +49,14 @@ public class Player : MonoBehaviour
         slider.maxValue = 10;
     }
 
-    public void StartTurn(int index)
+    public void StartTurn()
     {
         countTime = 0;
         startTurn = true;
         countTimePanel.SetActive(true);
         textNumber.text = Mathf.FloorToInt(countTime).ToString();
         slider.value = Mathf.FloorToInt(countTime);
-        GameManager.Instance.SetCurrentPlayerIndex(index);
+        newCardButton.interactable = true;
     }
     
     public void EndTurn()

@@ -16,7 +16,6 @@ public class GameManager : Singleton<GameManager>
     
     private PhotonView _photonView;
     private int _startPlayerIndex;
-    private int _currentPlayerIndex;
     
     private void OnEnable()
     {
@@ -46,13 +45,13 @@ public class GameManager : Singleton<GameManager>
         StuffThattMasterClientDoes();
     }
 
-    private void NextTurn()
+    private void NextTurn(int index)
     {
-        _currentPlayerIndex++;
+        index++;
 
-        if (PhotonNetwork.PlayerList.Length == _currentPlayerIndex) _currentPlayerIndex = 0;
+        if (PhotonNetwork.PlayerList.Length == index) index = 0;
 
-        _photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, _currentPlayerIndex);
+        _photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, index);
     }
 
     private void StuffThattMasterClientDoes()
@@ -60,7 +59,6 @@ public class GameManager : Singleton<GameManager>
         if (PhotonNetwork.IsMasterClient)
         {
             _startPlayerIndex = new Random().Next(0, PhotonNetwork.PlayerList.Length);
-            _currentPlayerIndex = _startPlayerIndex;
 
             for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
             {
@@ -70,20 +68,15 @@ public class GameManager : Singleton<GameManager>
                 }
             }
 
-            _photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, _currentPlayerIndex);
-            _photonView.RPC("EndTurn", RpcTarget.AllBufferedViaServer, _currentPlayerIndex);
+            _photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
+            _photonView.RPC("EndTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
         }
-    }
-
-    public void SetCurrentPlayerIndex(int index)
-    {
-        _currentPlayerIndex = index;
     }
 
     [PunRPC]
     public void StartTurn(int index)
     {
-        if (index == PhotonNetwork.LocalPlayer.ActorNumber - 1) player.StartTurn(index);
+        if (index == PhotonNetwork.LocalPlayer.ActorNumber - 1) player.StartTurn();
     }
     
     [PunRPC]
