@@ -17,7 +17,7 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     {
         _rectTransform = GetComponent<RectTransform>();
         _canvasGroup = GetComponent<CanvasGroup>();
-        _canvasRectTransform = GetComponentInParent<Canvas>().transform as RectTransform;
+        //_canvasRectTransform = GetComponentInParent<Canvas>().transform as RectTransform;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
