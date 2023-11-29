@@ -16,6 +16,7 @@ public class GameManager : Singleton<GameManager>
     
     private PhotonView _photonView;
     private int _startPlayerIndex;
+    private int _currentPlayerIndex;
     
     private void OnEnable()
     {
@@ -47,11 +48,11 @@ public class GameManager : Singleton<GameManager>
 
     private void NextTurn()
     {
-        _startPlayerIndex++;
+        _currentPlayerIndex++;
 
-        if (PhotonNetwork.PlayerList.Length == _startPlayerIndex) _startPlayerIndex = 0;
+        if (PhotonNetwork.PlayerList.Length == _currentPlayerIndex) _currentPlayerIndex = _startPlayerIndex;
 
-        _photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
+        _photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, _currentPlayerIndex);
     }
 
     private void StuffThattMasterClientDoes()
@@ -59,6 +60,7 @@ public class GameManager : Singleton<GameManager>
         if (PhotonNetwork.IsMasterClient)
         {
             _startPlayerIndex = new Random().Next(0, PhotonNetwork.PlayerList.Length);
+            _currentPlayerIndex = _startPlayerIndex;
 
             for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
             {
@@ -68,8 +70,8 @@ public class GameManager : Singleton<GameManager>
                 }
             }
 
-            _photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
-            _photonView.RPC("EndTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
+            _photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, _currentPlayerIndex);
+            _photonView.RPC("EndTurn", RpcTarget.AllBufferedViaServer, _currentPlayerIndex);
         }
     }
 
