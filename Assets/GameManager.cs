@@ -50,7 +50,7 @@ public class GameManager : Singleton<GameManager>
     {
         _currentPlayerIndex++;
 
-        if (PhotonNetwork.PlayerList.Length == _currentPlayerIndex) _currentPlayerIndex = _startPlayerIndex;
+        if (PhotonNetwork.PlayerList.Length == _currentPlayerIndex) _currentPlayerIndex = 0;
 
         _photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, _currentPlayerIndex);
     }
