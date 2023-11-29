@@ -44,8 +44,11 @@ public class CardManager : Singleton<CardManager>
             }
         }
 
-        var card = Instantiate(cardPrefab, PlaceManager.Instance.PlayerSlots[(int)vector2.X][(int)vector2.Y].transform);
-     
+        var card = PhotonNetwork.Instantiate(cardPrefab.name, new Vector3(), Quaternion.identity);
+        
+        card.transform.SetParent(PlaceManager.Instance.PlayerSlots[(int)vector2.X][(int)vector2.Y].transform);
+        card.GetComponent<RectTransform>().localPosition = Vector3.zero;
+        
         string number = cardStatus.Substring(1, cardStatus.Length - 1);
         string color = cardStatus.Substring(0, 1);
         CardColorType colorType = CardColorType.Black;
@@ -66,7 +69,7 @@ public class CardManager : Singleton<CardManager>
                 break;
         }
         
-        card.SetCardStatus(int.Parse(number), colorType);
+        card.GetComponent<Card>().SetCardStatus(int.Parse(number), colorType);
         card.transform.localScale = Vector3.one;
     }
 
