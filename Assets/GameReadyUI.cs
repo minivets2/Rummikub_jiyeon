@@ -16,6 +16,10 @@ public class GameReadyUI : MonoBehaviour
         if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers && gameObject.activeSelf)
         {
             gameObject.SetActive(false);
+        }
+
+        if (PhotonNetwork.IsMasterClient)
+        {
             onGameStartEvent?.Invoke();
             Debug.Log("참석완료");
         }
