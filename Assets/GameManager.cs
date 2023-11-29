@@ -49,29 +49,26 @@ public class GameManager : Singleton<GameManager>
         {
             _startPlayerIndex = new Random().Next(0, PhotonNetwork.PlayerList.Length);
             
-            for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+            for (int j = 0; j < 12; j++)
             {
-                for (int j = 0; j < 12; j++)
-                {
-                    _photonView.RPC("UpdatedShuffledCards_RPC", RpcTarget.AllBufferedViaServer, CardManager.Instance.NewCard());
-                }
-
-                if (i == _startPlayerIndex) _photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer);
-                else _photonView.RPC("EndTurn", RpcTarget.AllBufferedViaServer);
+                _photonView.RPC("UpdatedShuffledCards_RPC", RpcTarget.AllBufferedViaServer, CardManager.Instance.NewCard());
             }
+
+            _photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
+            _photonView.RPC("EndTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
         }
     }
 
     [PunRPC]
-    public void StartTurn()
+    public void StartTurn(int index)
     {
-        player.StartTurn();
+        if (index == PhotonNetwork.LocalPlayer.ActorNumber - 1) player.StartTurn();
     }
     
     [PunRPC]
-    public void EndTurn()
+    public void EndTurn(int index)
     {
-        player.EndTurn();
+        if (index != PhotonNetwork.LocalPlayer.ActorNumber - 1) player.EndTurn();
     }
     
     [PunRPC]
