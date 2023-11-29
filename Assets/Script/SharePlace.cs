@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +7,14 @@ public class SharePlace : Place
     private List<List<Card>> _previousPlayGround = new List<List<Card>>();
     private List<Card> element = new List<Card>();
     private bool _test;
-    
+
+    private void Start()
+    {
+        transform.SetParent(GameObject.Find("Canvas").transform);
+        GetComponent<RectTransform>().localPosition = new Vector3(32, 56,0);
+        GetComponent<RectTransform>().localScale = Vector3.one;
+    }
+
     public bool CheckComplete()
     {
         _previousPlayGround.Clear();

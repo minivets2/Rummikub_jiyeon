@@ -30,20 +30,6 @@ public class GameManager : Singleton<GameManager>
         Player.endTurnEvent -= NextTurn;
     }
 
-    private void Start()
-    {
-        GameObject sp = null;
-        
-        if (PhotonNetwork.IsMasterClient)
-        {
-            sp = PhotonNetwork.Instantiate(sharePlace.name, new Vector3(), Quaternion.identity);
-        }
-        
-        sp.transform.SetParent(GameObject.Find("Canvas").transform);
-        sp.GetComponent<RectTransform>().localPosition = new Vector3(32, 56,0);
-        sp.GetComponent<RectTransform>().localScale = Vector3.one;
-    }
-
     private void StartGame()
     {
         photonView.RPC("SpawnGamePlayer_RPC", RpcTarget.AllBufferedViaServer, new object[] { });
@@ -65,6 +51,8 @@ public class GameManager : Singleton<GameManager>
     {
         if (PhotonNetwork.IsMasterClient)
         {
+            PhotonNetwork.Instantiate(sharePlace.name, new Vector3(), Quaternion.identity);
+            
             _startPlayerIndex = new Random().Next(0, PhotonNetwork.PlayerList.Length);
 
             for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
@@ -78,16 +66,6 @@ public class GameManager : Singleton<GameManager>
             photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
             photonView.RPC("EndTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
         }
-    }
-    
-    public void SpawnSharePlace()
-    {
-        var player =PhotonNetwork.Instantiate(playerPrefab.name, new Vector3(), Quaternion.identity);
-        player.transform.SetParent(playerPosition);
-        player.transform.localPosition = Vector3.zero;
-        player.transform.localScale = Vector3.one;
-        player.GetComponent<Player>().InitPlayerInfo(PhotonNetwork.LocalPlayer.ActorNumber -1);
-        this.player = player.GetComponent<Player>();
     }
 
     [PunRPC]
