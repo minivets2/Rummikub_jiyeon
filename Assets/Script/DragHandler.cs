@@ -7,7 +7,7 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     private CanvasGroup _canvasGroup;
     private RectTransform _rectTransform;
     private Vector3 _offset;
-    private RectTransform _canvasRectTransform;
+    [SerializeField] private RectTransform _canvasRectTransform;
     private Transform _beginDragSlot;
     private Transform _beginDragLine;
     private int _beginDragSlotSiblingIndex;
@@ -17,7 +17,7 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     {
         _rectTransform = GetComponent<RectTransform>();
         _canvasGroup = GetComponent<CanvasGroup>();
-        //_canvasRectTransform = GetComponentInParent<Canvas>().transform as RectTransform;
+        _canvasRectTransform = GameObject.Find("Canvas").GetComponent<RectTransform>();
     }
 
     public void OnBeginDrag(PointerEventData eventData)
