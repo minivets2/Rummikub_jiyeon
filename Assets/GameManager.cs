@@ -48,10 +48,13 @@ public class GameManager : Singleton<GameManager>
         if (PhotonNetwork.IsMasterClient)
         {
             _startPlayerIndex = new Random().Next(0, PhotonNetwork.PlayerList.Length);
-            
-            for (int j = 0; j < 12; j++)
+
+            for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
             {
-                _photonView.RPC("UpdatedShuffledCards_RPC", RpcTarget.AllBufferedViaServer, CardManager.Instance.NewCard());
+                for (int j = 0; j < 12; j++)
+                {
+                    _photonView.RPC("UpdatedShuffledCards_RPC", RpcTarget.AllBufferedViaServer, CardManager.Instance.NewCard(), i);
+                }
             }
 
             _photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
@@ -72,9 +75,9 @@ public class GameManager : Singleton<GameManager>
     }
     
     [PunRPC]
-    public void UpdatedShuffledCards_RPC(string cardStatus)
+    public void UpdatedShuffledCards_RPC(string cardStatus, int index)
     {
-        CardManager.Instance.NewCardCreate(cardStatus);
+        if (index == PhotonNetwork.LocalPlayer.ActorNumber - 1) CardManager.Instance.NewCardCreate(cardStatus);
     }
 
     [PunRPC]
