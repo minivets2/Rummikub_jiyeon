@@ -25,8 +25,8 @@ public class CardManager : Singleton<CardManager>
     };
 
     private int cardCount = 106;
-    
-    public void NewCardButtonClick()
+
+    public void NewCardCreate(string cardStatus)
     {
         Vector2 vector2;
 
@@ -43,15 +43,7 @@ public class CardManager : Singleton<CardManager>
                 break;
             }
         }
-        
-        string cardStatus = GetRandomCardStatus();
 
-        if (cardStatus == "")
-        {
-            //뽑을 카드가 없을때
-            return;
-        }
-        
         var card = Instantiate(cardPrefab, PlaceManager.Instance.PlayerSlots[(int)vector2.X][(int)vector2.Y].transform);
      
         string number = cardStatus.Substring(1, cardStatus.Length - 1);
@@ -78,7 +70,7 @@ public class CardManager : Singleton<CardManager>
         card.transform.localScale = Vector3.one;
     }
 
-    private string GetRandomCardStatus()
+    public string NewCard()
     {
         string randomKey = "";
 

@@ -15,7 +15,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject countTimePanel;
     [SerializeField] private TMP_Text textNumber;
     [SerializeField] private Slider slider;
-    [SerializeField] private PlaceManager placeManager;
+    [SerializeField] private PlayerPlace playerPlace;
 
     public int PlayerIndex => playerIndex;
     
@@ -52,7 +52,7 @@ public class Player : MonoBehaviour
         this.playerIndex = playerIndex;
         playerID.text = RoomManager.Instance.playerId;
         playerImage.sprite = RoomManager.Instance.playerImage;
-        placeManager.InitPlayerPlace();
+        PlaceManager.Instance.InitPlayerPlace(playerPlace);
         startTurn = false;
     }
 

@@ -45,13 +45,15 @@ public class PlaceManager : Singleton<PlaceManager>
     public Slot[] SharedSlots => sharedSlots;
     public List<List<Slot>> PlayerSlots => _playerSlots;
 
-    public void InitPlayerPlace()
+    public void InitPlayerPlace(PlayerPlace playerPlace)
     {
         for (int i = 0; i < 4; i++)
         {
             //var line = Instantiate(SharePlaceLinePrefab, sharePlace.transform);
             //_shareSlots.Add(line.Slots);
         }
+
+        this.playerPlace = playerPlace;
 
         for (int i = 0; i < 2; i++)
         {

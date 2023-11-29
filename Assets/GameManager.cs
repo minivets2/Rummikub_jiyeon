@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
-    [SerializeField] private List<Player> players;
+    [SerializeField] private Player players;
 
     [Header("Init")]
     [SerializeField] private Transform playerPosition;
@@ -17,12 +17,12 @@ public class GameManager : Singleton<GameManager>
     
     private void OnEnable()
     {
-        GameReadyUI.onGameStartEvent += SpawnPlayer;
+        GameReadyUI.onGameStartEvent += StartGame;
     }
 
     private void OnDisable()
     {
-        GameReadyUI.onGameStartEvent -= SpawnPlayer;
+        GameReadyUI.onGameStartEvent -= StartGame;
     }
 
     private void Start()
@@ -34,24 +34,33 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    private void SpawnPlayer()
+    private void StartGame()
     {
         _photonView = GetComponent<PhotonView>();
         _photonView.RPC("SpawnGamePlayer_RPC", RpcTarget.AllBufferedViaServer, new object[] { });
-        HideOtherPlayer();
+        StuffThattMasterClientDoes();
     }
 
-    private void HideOtherPlayer()
+    private void StuffThattMasterClientDoes()
     {
-        foreach (var player in players)
+        if (PhotonNetwork.IsMasterClient)
         {
-            if (player.PlayerIndex != PhotonNetwork.LocalPlayer.ActorNumber -1)
+            for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
             {
-                player.gameObject.SetActive(false);
+                for (int j = 0; j < 12; j++)
+                {
+                    _photonView.RPC("UpdatedShuffledCards_RPC", RpcTarget.AllBufferedViaServer, CardManager.Instance.NewCard());
+                }
             }
         }
     }
     
+    [PunRPC]
+    public void UpdatedShuffledCards_RPC(string cardStatus)
+    {
+        CardManager.Instance.NewCardCreate(cardStatus);
+    }
+
     [PunRPC]
     public void SpawnGamePlayer_RPC()
     {
@@ -60,7 +69,7 @@ public class GameManager : Singleton<GameManager>
         player.transform.localPosition = Vector3.zero;
         player.transform.localScale = Vector3.one;
         player.GetComponent<Player>().InitPlayerInfo(PhotonNetwork.LocalPlayer.ActorNumber -1);
-        players.Add(player.GetComponent<Player>());
+        players = player.GetComponent<Player>();
     }
     
 }
