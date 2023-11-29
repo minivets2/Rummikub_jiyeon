@@ -1,10 +1,12 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SearchService;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     [Header("player info")]
+    [SerializeField] private int playerIndex;
     [SerializeField] private Image playerImage;
     [SerializeField] private TMP_Text playerID;
 
@@ -14,6 +16,8 @@ public class Player : MonoBehaviour
     [SerializeField] private TMP_Text textNumber;
     [SerializeField] private Slider slider;
     [SerializeField] private PlaceManager placeManager;
+
+    public int PlayerIndex => playerIndex;
     
     private void Update()
     {
@@ -43,8 +47,9 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void InitPlayerInfo()
+    public void InitPlayerInfo(int playerIndex)
     {
+        this.playerIndex = playerIndex;
         playerID.text = RoomManager.Instance.playerId;
         playerImage.sprite = RoomManager.Instance.playerImage;
         placeManager.InitPlayerPlace();
