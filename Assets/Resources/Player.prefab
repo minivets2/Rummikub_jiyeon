@@ -559,6 +559,7 @@ MonoBehaviour:
   textNumber: {fileID: 3296432519545844696}
   slider: {fileID: 3296432518441288661}
   playerPlace: {fileID: 3296432519255441074}
+  newCardButton: {fileID: 3296432519125664108}
 --- !u!114 &466872018286750341
 MonoBehaviour:
   m_ObjectHideFlags: 0

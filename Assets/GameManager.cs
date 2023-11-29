@@ -1,10 +1,11 @@
-using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Random = System.Random;
 
 public class GameManager : Singleton<GameManager>
 {
-    [SerializeField] private Player players;
+    [FormerlySerializedAs("players")] [SerializeField] private Player player;
 
     [Header("Init")]
     [SerializeField] private Transform playerPosition;
@@ -14,6 +15,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private GameObject cardManager;
     
     private PhotonView _photonView;
+    private int _startPlayerIndex;
     
     private void OnEnable()
     {
@@ -45,14 +47,31 @@ public class GameManager : Singleton<GameManager>
     {
         if (PhotonNetwork.IsMasterClient)
         {
+            _startPlayerIndex = new Random().Next(0, PhotonNetwork.PlayerList.Length);
+            
             for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
             {
                 for (int j = 0; j < 12; j++)
                 {
                     _photonView.RPC("UpdatedShuffledCards_RPC", RpcTarget.AllBufferedViaServer, CardManager.Instance.NewCard());
                 }
+
+                if (i == _startPlayerIndex) _photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer);
+                else _photonView.RPC("EndTurn", RpcTarget.AllBufferedViaServer);
             }
         }
+    }
+
+    [PunRPC]
+    public void StartTurn()
+    {
+        player.StartTurn();
+    }
+    
+    [PunRPC]
+    public void EndTurn()
+    {
+        player.EndTurn();
     }
     
     [PunRPC]
@@ -69,7 +88,7 @@ public class GameManager : Singleton<GameManager>
         player.transform.localPosition = Vector3.zero;
         player.transform.localScale = Vector3.one;
         player.GetComponent<Player>().InitPlayerInfo(PhotonNetwork.LocalPlayer.ActorNumber -1);
-        players = player.GetComponent<Player>();
+        this.player = player.GetComponent<Player>();
     }
     
 }

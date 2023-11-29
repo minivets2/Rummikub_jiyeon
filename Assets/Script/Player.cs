@@ -1,6 +1,6 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.SearchService;
+using Photon.Pun;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour
@@ -16,9 +16,10 @@ public class Player : MonoBehaviour
     [SerializeField] private TMP_Text textNumber;
     [SerializeField] private Slider slider;
     [SerializeField] private PlayerPlace playerPlace;
-
-    public int PlayerIndex => playerIndex;
+    [SerializeField] private Button newCardButton;
     
+    private PhotonView _photonView;
+
     private void Update()
     {
         if (startTurn)
@@ -54,17 +55,24 @@ public class Player : MonoBehaviour
         playerImage.sprite = RoomManager.Instance.playerImage;
         PlaceManager.Instance.InitPlayerPlace(playerPlace);
         startTurn = false;
+        slider.maxValue = 30;
     }
 
-    public void PlayerTurn()
+    public void StartTurn()
     {
         countTime = 0;
         startTurn = true;
         countTimePanel.SetActive(true);
         textNumber.text = Mathf.FloorToInt(countTime).ToString();
-        slider.maxValue = 30;
         slider.value = Mathf.FloorToInt(countTime);
 
+    }
+    
+    public void EndTurn()
+    {
+        startTurn = false;
+        countTimePanel.SetActive(false);
+        newCardButton.interactable = false;
     }
     
     
