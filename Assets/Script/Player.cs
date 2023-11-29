@@ -19,6 +19,9 @@ public class Player : MonoBehaviour
     [SerializeField] private Button newCardButton;
     
     private PhotonView _photonView;
+    
+    public delegate void EndTurnEvent();
+    public static EndTurnEvent endTurnEvent;
 
     private void Update()
     {
@@ -30,20 +33,8 @@ public class Player : MonoBehaviour
 
             if (countTime > slider.maxValue)
             {
-                startTurn = false;
-                countTimePanel.SetActive(false);
-
-                PlaceManager placeManager = PlaceManager.Instance;
-                /*
-                if (!placeManager.SharePlace.CheckComplete())
-                {
-                    placeManager.ResetCardList();
-                }
-                else
-                {
-                    placeManager.SaveCardList();
-                }
-                */
+                EndTurn();
+                endTurnEvent?.Invoke();
             }
         }
     }
@@ -55,7 +46,7 @@ public class Player : MonoBehaviour
         playerImage.sprite = RoomManager.Instance.playerImage;
         PlaceManager.Instance.InitPlayerPlace(playerPlace);
         startTurn = false;
-        slider.maxValue = 30;
+        slider.maxValue = 10;
     }
 
     public void StartTurn()

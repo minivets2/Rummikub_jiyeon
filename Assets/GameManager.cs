@@ -5,7 +5,7 @@ using Random = System.Random;
 
 public class GameManager : Singleton<GameManager>
 {
-    [FormerlySerializedAs("players")] [SerializeField] private Player player;
+    [SerializeField] private Player player;
 
     [Header("Init")]
     [SerializeField] private Transform playerPosition;
@@ -20,11 +20,13 @@ public class GameManager : Singleton<GameManager>
     private void OnEnable()
     {
         GameReadyUI.onGameStartEvent += StartGame;
+        Player.endTurnEvent += NextTurn;
     }
 
     private void OnDisable()
     {
         GameReadyUI.onGameStartEvent -= StartGame;
+        Player.endTurnEvent -= NextTurn;
     }
 
     private void Start()
@@ -41,6 +43,15 @@ public class GameManager : Singleton<GameManager>
         _photonView = GetComponent<PhotonView>();
         _photonView.RPC("SpawnGamePlayer_RPC", RpcTarget.AllBufferedViaServer, new object[] { });
         StuffThattMasterClientDoes();
+    }
+
+    private void NextTurn()
+    {
+        _startPlayerIndex++;
+
+        if (PhotonNetwork.PlayerList.Length == _startPlayerIndex) _startPlayerIndex = 0;
+
+        _photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
     }
 
     private void StuffThattMasterClientDoes()
