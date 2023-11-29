@@ -75,10 +75,15 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    public void SetCurrentPlayerIndex(int index)
+    {
+        _currentPlayerIndex = index;
+    }
+
     [PunRPC]
     public void StartTurn(int index)
     {
-        if (index == PhotonNetwork.LocalPlayer.ActorNumber - 1) player.StartTurn();
+        if (index == PhotonNetwork.LocalPlayer.ActorNumber - 1) player.StartTurn(index);
     }
     
     [PunRPC]
