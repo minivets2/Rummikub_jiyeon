@@ -32,13 +32,16 @@ public class GameManager : Singleton<GameManager>
 
     private void Start()
     {
+        GameObject sp = null;
+        
         if (PhotonNetwork.IsMasterClient)
         {
-            var sp = PhotonNetwork.Instantiate(sharePlace.name, new Vector3(), Quaternion.identity);
-            sp.transform.SetParent(sharePlacePosition);
-            player.transform.localPosition = new Vector3(32, 56,0);
-            player.transform.localScale = Vector3.one;
+            sp = PhotonNetwork.Instantiate(sharePlace.name, new Vector3(), Quaternion.identity);
         }
+        
+        sp.transform.SetParent(GameObject.Find("Canvas").transform);
+        sp.GetComponent<RectTransform>().localPosition = new Vector3(32, 56,0);
+        sp.GetComponent<RectTransform>().localScale = Vector3.one;
     }
 
     private void StartGame()
