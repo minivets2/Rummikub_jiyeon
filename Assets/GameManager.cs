@@ -20,7 +20,7 @@ public class GameManager : Singleton<GameManager>
     private int _currentPlayerIndex;
 
     public int CurrentPlayerIndex => _currentPlayerIndex;
-    
+
     private void OnEnable()
     {
         GameReadyUI.onGameStartEvent += StartGame;

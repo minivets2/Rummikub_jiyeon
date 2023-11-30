@@ -22,6 +22,8 @@ public class Player : MonoBehaviour
     private bool _startTurn;
     private float _countTime;
     
+    public delegate void StartTurnEvent();
+    public static StartTurnEvent startTurnEvent;
     public delegate void EndTurnEvent(int index);
     public static EndTurnEvent endTurnEvent;
 
@@ -59,6 +61,7 @@ public class Player : MonoBehaviour
         textNumber.text = Mathf.FloorToInt(_countTime).ToString();
         slider.value = Mathf.FloorToInt(_countTime);
         newCardButton.interactable = true;
+        startTurnEvent?.Invoke();
     }
     
     public void EndTurn()

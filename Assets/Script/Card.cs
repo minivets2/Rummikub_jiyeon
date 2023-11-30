@@ -20,7 +20,8 @@ public class Card : MonoBehaviour
     [SerializeField] private TMP_Text textNumber;
     [SerializeField] private Image image;
     [SerializeField][ReadOnly] private string cardGuid;
-    
+    [SerializeField] private bool moveComplete;
+
     [Header("Joker")]
     [SerializeField] private Sprite jokerSprite_black;
     [SerializeField] private Sprite jokerSprite_red;
@@ -28,6 +29,7 @@ public class Card : MonoBehaviour
     public int Number => number;
     public CardColorType ColorType => colorType;
     public string CardGuid => cardGuid;
+    public bool MoveComplete => moveComplete;
 
     private void Start()
     {
@@ -76,5 +78,10 @@ public class Card : MonoBehaviour
         }
 
         return newColor;
+    }
+
+    public void SetMoveComplete(bool value)
+    {
+        moveComplete = value;
     }
 }
