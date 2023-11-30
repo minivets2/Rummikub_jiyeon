@@ -1,6 +1,6 @@
+using System.Linq.Expressions;
 using Photon.Pun;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = System.Random;
 
 public class GameManager : Singleton<GameManager>
@@ -20,17 +20,22 @@ public class GameManager : Singleton<GameManager>
     private int _currentPlayerIndex;
 
     public int CurrentPlayerIndex => _currentPlayerIndex;
+    
+    public delegate void SetCardEvent(int row, int column, GameObject card);
+    public static SetCardEvent setCardEvent;
 
     private void OnEnable()
     {
         GameReadyUI.onGameStartEvent += StartGame;
         Player.endTurnEvent += NextTurn;
+        Slot.dropCardEvent += DropCard;
     }
 
     private void OnDisable()
     {
         GameReadyUI.onGameStartEvent -= StartGame;
         Player.endTurnEvent -= NextTurn;
+        Slot.dropCardEvent -= DropCard;
     }
 
     private void StartGame()
@@ -49,6 +54,11 @@ public class GameManager : Singleton<GameManager>
         if (PhotonNetwork.PlayerList.Length == index) index = 0;
 
         photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, index);
+    }
+
+    private void DropCard(int playerIndex, int row, int column, GameObject card)
+    {
+        photonView.RPC("SettingSlot", RpcTarget.AllBufferedViaServer, playerIndex, row, column, card);
     }
 
     private void StuffThattMasterClientDoes()
@@ -101,6 +111,14 @@ public class GameManager : Singleton<GameManager>
         player.transform.localScale = Vector3.one;
         player.GetComponent<Player>().InitPlayerInfo(PhotonNetwork.LocalPlayer.ActorNumber -1);
         this.player = player.GetComponent<Player>();
+    }
+    
+    [PunRPC]
+    public void SettingSlot(int playerIndex, int row, int column, GameObject card)
+    {
+        if (playerIndex == PhotonNetwork.LocalPlayer.ActorNumber - 1) return;
+        
+        setCardEvent?.Invoke(row, column, card);
     }
     
 }

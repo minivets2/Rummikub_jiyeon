@@ -311,6 +311,7 @@ MonoBehaviour:
   textNumber: {fileID: 6550199992968909047}
   image: {fileID: 3174187636516912444}
   cardGuid: 
+  moveComplete: 0
   jokerSprite_black: {fileID: 21300000, guid: c158d5188310656469de15e7aa6308b4, type: 3}
   jokerSprite_red: {fileID: 21300000, guid: 5611f318f3364684f84e3963168fddce, type: 3}
 --- !u!114 &5282533024593227653

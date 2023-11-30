@@ -1,8 +1,6 @@
-using System;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Vector2 = System.Numerics.Vector2;
 
 public enum SlotType
 {
@@ -13,23 +11,39 @@ public enum SlotType
 public class Slot : MonoBehaviour, IDropHandler
 {
     [SerializeField] private SlotType slotType;
-    [SerializeField] private int lineIndex;
-    public Transform otherCardTransform; 
-    public int LineIndex => lineIndex;
-    public SlotType SlotType => slotType;
+    [SerializeField] private int row;
+    [SerializeField] private int column;
+    
+    private Transform _otherCardTransform;
 
+    public int Row => row;
+    public int Column => column;
+    public SlotType SlotType => slotType;
+    
+    public delegate void CardEvent(int playerIndex, int row, int column, GameObject card);
+    public static CardEvent dropCardEvent;
+
+    private void Start()
+    {
+        column = FindChildIndex();
+    }
+    
     private void OnEnable()
     {
         //추후에 카드 정렬 완료 했을때 이벤트로 수정
-        Player.endTurnEvent += CardStatusChange;
+        Player.endTurnEvent += SetMoveComplete;
+        Player.completeEvent += CheckCard;
+        GameManager.setCardEvent += SetCard;
     }
 
     private void OnDisable()
     {
-        Player.endTurnEvent -= CardStatusChange;
+        Player.endTurnEvent -= SetMoveComplete;
+        Player.completeEvent -= CheckCard;
+        GameManager.setCardEvent -= SetCard;
     }
 
-    private void CardStatusChange(int index)
+    private void SetMoveComplete(int index)
     {
         if (transform.childCount == 1 && slotType == SlotType.SharePlace)
         {
@@ -39,42 +53,51 @@ public class Slot : MonoBehaviour, IDropHandler
 
     public void OnDrop(PointerEventData eventData)
     {
-        otherCardTransform = eventData.pointerDrag.transform;
+        _otherCardTransform = eventData.pointerDrag.transform;
         
         if ((slotType == SlotType.SharePlace &&
             GameManager.Instance.CurrentPlayerIndex != PhotonNetwork.LocalPlayer.ActorNumber - 1) ||
-            (otherCardTransform.GetComponentInParent<Slot>().slotType == SlotType.SharePlace &&
-             otherCardTransform.GetComponent<Card>().MoveComplete && slotType == SlotType.PlayerPlace)) return;
+            (_otherCardTransform.GetComponentInParent<Slot>().slotType == SlotType.SharePlace &&
+             _otherCardTransform.GetComponent<Card>().MoveComplete && slotType == SlotType.PlayerPlace)) return;
 
-        otherCardTransform.SetParent(transform);
-        otherCardTransform.localPosition = Vector3.zero;
-        otherCardTransform.GetComponent<RectTransform>().localScale = Vector3.one;
+        _otherCardTransform.SetParent(transform);
+        _otherCardTransform.localPosition = Vector3.zero;
+        _otherCardTransform.GetComponent<RectTransform>().localScale = Vector3.one;
+        
         PlaceManager.Instance.CheckOverlap();
         PlaceManager.Instance.CheckPlaceSize();
     }
 
-    public void DestroyChildCard()
+    private int FindChildIndex()
     {
-        if (transform.childCount == 0)
-            return;
+        int index = 0;
+        
+        for (int i = 0; i < transform.parent.childCount; i++)
+        {
+            if (transform.parent.GetComponent<Line>() && transform.parent.GetChild(i) == transform)
+            {
+                index = i;
+                break;
+            }
+        }
 
-        Transform childTransform = transform.GetChild(0);
-        Destroy(childTransform.gameObject);
+        return index;
     }
 
-    public Vector2 CardInfo()
+    public void SetRow(int row)
     {
-        if (transform.childCount == 0)
-        {
-            Vector2 nullInfo = new Vector2(100, 100);
-            return nullInfo;
-        }
+        this.row = row;
+    }
+
+    private void CheckCard()
+    {
+        if (transform.childCount == 0) return;
         
-        Transform childTransform = transform.GetChild(0);
+        dropCardEvent?.Invoke( PhotonNetwork.LocalPlayer.ActorNumber -1, row, column, transform.GetChild(0).gameObject);
+    }
 
-        Card card = childTransform.GetComponent<Card>();
-
-        Vector2 cardInfo = new Vector2(card.Number, (int)card.ColorType);
-        return cardInfo;
+    private void SetCard(int row, int column, GameObject card)
+    {
+        Debug.Log(row + "," + column);
     }
 }

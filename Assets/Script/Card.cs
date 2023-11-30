@@ -2,7 +2,6 @@ using System;
 using TMPro;
 using Unity.Collections;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.UI;
 
 public enum CardColorType

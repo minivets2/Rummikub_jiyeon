@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 using Photon.Pun;
@@ -26,6 +25,9 @@ public class Player : MonoBehaviour
     public static StartTurnEvent startTurnEvent;
     public delegate void EndTurnEvent(int index);
     public static EndTurnEvent endTurnEvent;
+    
+    public delegate void CompleteEvent();
+    public static CompleteEvent completeEvent;
 
     private void Update()
     {
@@ -39,6 +41,7 @@ public class Player : MonoBehaviour
             {
                 EndTurn();
                 endTurnEvent?.Invoke(playerIndex);
+                completeEvent?.Invoke();
             }
         }
     }
@@ -77,6 +80,7 @@ public class Player : MonoBehaviour
     {
         EndTurn();
         endTurnEvent?.Invoke(playerIndex);
+        completeEvent?.Invoke();
     }
     
     
