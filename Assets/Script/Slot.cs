@@ -95,7 +95,10 @@ public class Slot : MonoBehaviour, IDropHandler
     {
         if (slotType == SlotType.PlayerPlace) return;
 
-        dropCardEvent?.Invoke(GetComponentInChildren<Card>().Status, PhotonNetwork.LocalPlayer.ActorNumber -1, row, column);
+        if (transform.childCount == 1)
+        {
+            dropCardEvent?.Invoke(GetComponentInChildren<Card>().Status, PhotonNetwork.LocalPlayer.ActorNumber -1, row, column);   
+        }
     }
 
     private void DropCard(string cardStatus, int row, int column)
