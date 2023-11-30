@@ -120,7 +120,7 @@ public class Slot : MonoBehaviour, IDropHandler
 
     private void DestroyCard(int row, int column)
     {
-        if (this.row == row && this.column == column && slotType == SlotType.SharePlace)
+        if (this.row == row && this.column == column && slotType == SlotType.SharePlace && transform.childCount == 1)
         {
             Destroy(transform.GetChild(0));
         }
