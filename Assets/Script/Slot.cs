@@ -23,9 +23,6 @@ public class Slot : MonoBehaviour, IDropHandler
     
     public delegate void DropCardEvent(string cardStatus, int playerIndex, int row, int column);
     public static DropCardEvent dropCardEvent;
-    
-    public delegate void DestroyCardEvent(int playerIndex, int row, int column);
-    public static DestroyCardEvent destroyCardEvent;
 
     private void Start()
     {
@@ -38,7 +35,6 @@ public class Slot : MonoBehaviour, IDropHandler
         Player.endTurnEvent += SetMoveComplete;
         SharePlaceManager.cardDropEvent += CheckCard;
         GameManager.dropCardEvent += DropCard;
-        GameManager.destroyCardEvent += DestroyCard;
     }
 
     private void OnDisable()
@@ -46,7 +42,6 @@ public class Slot : MonoBehaviour, IDropHandler
         Player.endTurnEvent -= SetMoveComplete;
         SharePlaceManager.cardDropEvent -= CheckCard;
         GameManager.dropCardEvent -= DropCard;
-        GameManager.destroyCardEvent -= DestroyCard;
     }
 
     private void SetMoveComplete(int index)
@@ -100,17 +95,16 @@ public class Slot : MonoBehaviour, IDropHandler
     {
         if (slotType == SlotType.PlayerPlace) return;
 
-        if (transform.childCount == 0)
-        {
-            destroyCardEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber -1, row, column);
-            return;
-        }
-        
         dropCardEvent?.Invoke(GetComponentInChildren<Card>().Status, PhotonNetwork.LocalPlayer.ActorNumber -1, row, column);
     }
 
     private void DropCard(string cardStatus, int row, int column)
     {
+        if (slotType == SlotType.SharePlace && transform.childCount == 1)
+        {
+            Destroy(transform.GetChild(0).gameObject);
+        }
+        
         if (this.row == row && this.column == column && slotType == SlotType.SharePlace)
         {
             var card = CardManager.Instance.CardCreate(cardStatus, false);
@@ -118,14 +112,6 @@ public class Slot : MonoBehaviour, IDropHandler
             card.transform.SetParent(transform);
             card.GetComponent<RectTransform>().localPosition = Vector3.zero;
             card.transform.localScale = Vector3.one;
-        }
-    }
-
-    private void DestroyCard(int row, int column)
-    {
-        if (this.row == row && this.column == column && slotType == SlotType.SharePlace && transform.childCount == 1)
-        {
-            Destroy(transform.GetChild(0).gameObject);
         }
     }
 }

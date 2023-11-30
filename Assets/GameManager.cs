@@ -23,16 +23,12 @@ public class GameManager : Singleton<GameManager>
     
     public delegate void DropCardEvent(string cardStatus, int row, int column);
     public static DropCardEvent dropCardEvent;
-    
-    public delegate void DestroyCardEvent(int row, int column);
-    public static DestroyCardEvent destroyCardEvent;
 
     private void OnEnable()
     {
         GameReadyUI.onGameStartEvent += StartGame;
         Player.endTurnEvent += NextTurn;
         Slot.dropCardEvent += DropCard;
-        Slot.destroyCardEvent += DestroyCard;
     }
 
     private void OnDisable()
@@ -40,7 +36,6 @@ public class GameManager : Singleton<GameManager>
         GameReadyUI.onGameStartEvent -= StartGame;
         Player.endTurnEvent -= NextTurn;
         Slot.dropCardEvent -= DropCard;
-        Slot.destroyCardEvent -= DestroyCard;
     }
 
     private void StartGame()
@@ -130,13 +125,5 @@ public class GameManager : Singleton<GameManager>
         
         dropCardEvent?.Invoke(cardStatus, row, column);
     }
-    
-    [PunRPC]
-    public void Destroy_RPC(int playerIndex, int row, int column)
-    {
-        if (playerIndex == PhotonNetwork.LocalPlayer.ActorNumber - 1) return;
-        
-        destroyCardEvent?.Invoke(row, column);
-    }
-    
+
 }
