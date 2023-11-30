@@ -58,7 +58,7 @@ public class GameManager : Singleton<GameManager>
 
     private void DropCard(string cardStatus, int playerIndex, int row, int column)
     {
-        photonView.RPC("SettingSlot", RpcTarget.AllBufferedViaServer, playerIndex, row, column);
+        photonView.RPC("SettingSlot", RpcTarget.AllBufferedViaServer, cardStatus,playerIndex, row, column);
     }
 
     private void StuffThattMasterClientDoes()
