@@ -21,14 +21,18 @@ public class GameManager : Singleton<GameManager>
 
     public int CurrentPlayerIndex => _currentPlayerIndex;
     
-    public delegate void SetCardEvent(string cardStatus, int row, int column);
-    public static SetCardEvent setCardEvent;
+    public delegate void DropCardEvent(string cardStatus, int row, int column);
+    public static DropCardEvent dropCardEvent;
+    
+    public delegate void DestroyCardEvent(int row, int column);
+    public static DestroyCardEvent destroyCardEvent;
 
     private void OnEnable()
     {
         GameReadyUI.onGameStartEvent += StartGame;
         Player.endTurnEvent += NextTurn;
         Slot.dropCardEvent += DropCard;
+        Slot.destroyCardEvent += DestroyCard;
     }
 
     private void OnDisable()
@@ -36,6 +40,7 @@ public class GameManager : Singleton<GameManager>
         GameReadyUI.onGameStartEvent -= StartGame;
         Player.endTurnEvent -= NextTurn;
         Slot.dropCardEvent -= DropCard;
+        Slot.destroyCardEvent -= DestroyCard;
     }
 
     private void StartGame()
@@ -59,6 +64,11 @@ public class GameManager : Singleton<GameManager>
     private void DropCard(string cardStatus, int playerIndex, int row, int column)
     {
         photonView.RPC("SettingSlot", RpcTarget.AllBufferedViaServer, cardStatus,playerIndex, row, column);
+    }
+
+    private void DestroyCard(int playerIndex, int row, int column)
+    {
+        photonView.RPC("SettingSlot", RpcTarget.AllBufferedViaServer,playerIndex, row, column);
     }
 
     private void StuffThattMasterClientDoes()
@@ -118,7 +128,15 @@ public class GameManager : Singleton<GameManager>
     {
         if (playerIndex == PhotonNetwork.LocalPlayer.ActorNumber - 1) return;
         
-        setCardEvent?.Invoke(cardStatus, row, column);
+        dropCardEvent?.Invoke(cardStatus, row, column);
+    }
+    
+    [PunRPC]
+    public void SettingSlot(int playerIndex, int row, int column)
+    {
+        if (playerIndex == PhotonNetwork.LocalPlayer.ActorNumber - 1) return;
+        
+        destroyCardEvent?.Invoke(row, column);
     }
     
 }

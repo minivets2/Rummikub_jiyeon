@@ -21,8 +21,11 @@ public class Slot : MonoBehaviour, IDropHandler
     public int Column => column;
     public SlotType SlotType => slotType;
     
-    public delegate void CardEvent(string cardStatus, int playerIndex, int row, int column);
-    public static CardEvent dropCardEvent;
+    public delegate void DropCardEvent(string cardStatus, int playerIndex, int row, int column);
+    public static DropCardEvent dropCardEvent;
+    
+    public delegate void DestroyCardEvent(int playerIndex, int row, int column);
+    public static DestroyCardEvent destroyCardEvent;
 
     private void Start()
     {
@@ -33,15 +36,17 @@ public class Slot : MonoBehaviour, IDropHandler
     {
         //추후에 카드 정렬 완료 했을때 이벤트로 수정
         Player.endTurnEvent += SetMoveComplete;
-        Player.completeEvent += CheckCard;
-        GameManager.setCardEvent += SetCard;
+        PlaceManager.cardDropEvent += CheckCard;
+        GameManager.dropCardEvent += DropCard;
+        GameManager.destroyCardEvent += DestroyCard;
     }
 
     private void OnDisable()
     {
         Player.endTurnEvent -= SetMoveComplete;
-        Player.completeEvent -= CheckCard;
-        GameManager.setCardEvent -= SetCard;
+        PlaceManager.cardDropEvent -= CheckCard;
+        GameManager.dropCardEvent -= DropCard;
+        GameManager.destroyCardEvent -= DestroyCard;
     }
 
     private void SetMoveComplete(int index)
@@ -92,12 +97,16 @@ public class Slot : MonoBehaviour, IDropHandler
 
     private void CheckCard()
     {
-        if (transform.childCount == 0) return;
+        if (transform.childCount == 0)
+        {
+            destroyCardEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber -1, row, column);
+            return;
+        }
         
-        dropCardEvent?.Invoke( GetComponentInChildren<Card>().Status, PhotonNetwork.LocalPlayer.ActorNumber -1, row, column);
+        dropCardEvent?.Invoke(GetComponentInChildren<Card>().Status, PhotonNetwork.LocalPlayer.ActorNumber -1, row, column);
     }
 
-    private void SetCard(string cardStatus, int row, int column)
+    private void DropCard(string cardStatus, int row, int column)
     {
         if (this.row == row && this.column == column && slotType == SlotType.SharePlace)
         {
@@ -106,6 +115,14 @@ public class Slot : MonoBehaviour, IDropHandler
             card.transform.SetParent(transform);
             card.GetComponent<RectTransform>().localPosition = Vector3.zero;
             card.transform.localScale = Vector3.one;
+        }
+    }
+
+    private void DestroyCard(int row, int column)
+    {
+        if (this.row == row && this.column == column && slotType == SlotType.SharePlace)
+        {
+            Destroy(transform.GetChild(0));
         }
     }
 }

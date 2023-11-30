@@ -44,6 +44,9 @@ public class PlaceManager : Singleton<PlaceManager>
     public GameObject SharePlace => sharePlace;
     public Slot[] SharedSlots => sharedSlots;
     public List<List<Slot>> PlayerSlots => _playerSlots;
+    
+    public delegate void CardDropEvent();
+    public static CardDropEvent cardDropEvent;
 
     public void InitPlayerPlace(PlayerPlace playerPlace)
     {
@@ -190,6 +193,8 @@ public class PlaceManager : Singleton<PlaceManager>
 
             if (count == 0) break;
         }
+        
+        cardDropEvent?.Invoke();
     }
 
     public void SharePlaceExpansion()
