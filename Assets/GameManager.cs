@@ -21,7 +21,7 @@ public class GameManager : Singleton<GameManager>
 
     public int CurrentPlayerIndex => _currentPlayerIndex;
     
-    public delegate void SetCardEvent(int row, int column, GameObject card);
+    public delegate void SetCardEvent(int row, int column);
     public static SetCardEvent setCardEvent;
 
     private void OnEnable()
@@ -56,9 +56,9 @@ public class GameManager : Singleton<GameManager>
         photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, index);
     }
 
-    private void DropCard(int playerIndex, int row, int column, GameObject card)
+    private void DropCard(int playerIndex, int row, int column)
     {
-        photonView.RPC("SettingSlot", RpcTarget.AllBufferedViaServer, playerIndex, row, column, card);
+        photonView.RPC("SettingSlot", RpcTarget.AllBufferedViaServer, playerIndex, row, column);
     }
 
     private void StuffThattMasterClientDoes()
@@ -114,11 +114,11 @@ public class GameManager : Singleton<GameManager>
     }
     
     [PunRPC]
-    public void SettingSlot(int playerIndex, int row, int column, GameObject card)
+    public void SettingSlot(int playerIndex, int row, int column)
     {
         if (playerIndex == PhotonNetwork.LocalPlayer.ActorNumber - 1) return;
         
-        setCardEvent?.Invoke(row, column, card);
+        setCardEvent?.Invoke(row, column);
     }
     
 }

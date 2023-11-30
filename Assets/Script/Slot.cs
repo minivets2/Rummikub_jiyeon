@@ -20,7 +20,7 @@ public class Slot : MonoBehaviour, IDropHandler
     public int Column => column;
     public SlotType SlotType => slotType;
     
-    public delegate void CardEvent(int playerIndex, int row, int column, GameObject card);
+    public delegate void CardEvent(int playerIndex, int row, int column);
     public static CardEvent dropCardEvent;
 
     private void Start()
@@ -93,11 +93,11 @@ public class Slot : MonoBehaviour, IDropHandler
     {
         if (transform.childCount == 0) return;
         
-        dropCardEvent?.Invoke( PhotonNetwork.LocalPlayer.ActorNumber -1, row, column, transform.GetChild(0).gameObject);
+        dropCardEvent?.Invoke( PhotonNetwork.LocalPlayer.ActorNumber -1, row, column);
     }
 
-    private void SetCard(int row, int column, GameObject card)
+    private void SetCard(int row, int column)
     {
-        Debug.Log(row + "," + column);
+        Debug.Log("NEW CARD" + row + "," + column);
     }
 }
