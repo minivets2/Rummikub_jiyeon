@@ -25,31 +25,13 @@ public class CardManager : Singleton<CardManager>
 
     private int cardCount = 106;
 
-    public void NewCardCreate(string cardStatus)
+    public GameObject CardCreate(string cardStatus, bool isNewCard)
     {
-        Vector2 vector2;
+        var card = Instantiate(cardPrefab, new Vector3(), Quaternion.identity);
 
-        while (true)
-        {
-            vector2 = PlaceManager.Instance.FindEmptyPlayerSlotIndex();
-            
-            if ((int)vector2.X == 100)
-            {
-                PlaceManager.Instance.PlayerPlaceExpansion();
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        var card = PhotonNetwork.Instantiate(cardPrefab.name, new Vector3(), Quaternion.identity);
-        
-        card.transform.SetParent(PlaceManager.Instance.PlayerSlots[(int)vector2.X][(int)vector2.Y].transform);
-        card.GetComponent<RectTransform>().localPosition = Vector3.zero;
-        
         string number = cardStatus.Substring(1, cardStatus.Length - 1);
         string color = cardStatus.Substring(0, 1);
+        
         CardColorType colorType = CardColorType.Black;
         
         switch (color)
@@ -67,12 +49,48 @@ public class CardManager : Singleton<CardManager>
                 colorType = CardColorType.Black;
                 break;
         }
-        
-        card.GetComponent<Card>().SetCardStatus(int.Parse(number), colorType);
+
+        card.GetComponent<Card>().SetCardStatus(cardStatus, int.Parse(number), colorType);
+
+        if (isNewCard)
+        {
+            Vector2 vector2 = GetFrontPosition();
+            card.transform.SetParent(PlaceManager.Instance.PlayerSlots[(int)vector2.X][(int)vector2.Y].transform);
+        }
+        else
+        {
+            card.GetComponent<Card>().SetMoveComplete(true);
+            return card.gameObject;
+        }
+
+        card.GetComponent<RectTransform>().localPosition = Vector3.zero;
         card.transform.localScale = Vector3.one;
+
+        return null;
+    }
+    
+    public Vector2 GetFrontPosition()
+    {
+        Vector2 frontPosition;
+
+        while (true)
+        {
+            frontPosition = PlaceManager.Instance.FindEmptyPlayerSlotIndex();
+            
+            if ((int)frontPosition.X == 100)
+            {
+                PlaceManager.Instance.PlayerPlaceExpansion();
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return frontPosition;
     }
 
-    public string NewCard()
+    public string GetNewCardStatus()
     {
         string randomKey = "";
 

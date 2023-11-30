@@ -14,12 +14,16 @@ public enum CardColorType
 
 public class Card : MonoBehaviour
 {
+    [Header("card info")]
     [SerializeField][ReadOnly] private int number;
     [SerializeField][ReadOnly] private CardColorType colorType;
+    [SerializeField] [ReadOnly] private string status;
+    [SerializeField] private bool moveComplete;
+    [SerializeField][ReadOnly] private string cardGuid;
+    
+    [Header("card ui")]
     [SerializeField] private TMP_Text textNumber;
     [SerializeField] private Image image;
-    [SerializeField][ReadOnly] private string cardGuid;
-    [SerializeField] private bool moveComplete;
 
     [Header("Joker")]
     [SerializeField] private Sprite jokerSprite_black;
@@ -27,8 +31,9 @@ public class Card : MonoBehaviour
     
     public int Number => number;
     public CardColorType ColorType => colorType;
-    public string CardGuid => cardGuid;
+    public string Status => status;
     public bool MoveComplete => moveComplete;
+    public string CardGuid => cardGuid;
 
     private void Start()
     {
@@ -36,11 +41,13 @@ public class Card : MonoBehaviour
         cardGuid = Guid.NewGuid().ToString();
     }
 
-    public void SetCardStatus(int cardNumber, CardColorType cardColor)
+    public void SetCardStatus(string cardStatus, int cardNumber, CardColorType cardColor)
     {
         textNumber.text = cardNumber.ToString();
         textNumber.color = SetCardColor(cardColor, ref colorType);
         number = cardNumber;
+        status = cardStatus;
+        moveComplete = false;
         image.gameObject.SetActive(false);
 
         if (cardNumber == 20 && colorType == CardColorType.Black)

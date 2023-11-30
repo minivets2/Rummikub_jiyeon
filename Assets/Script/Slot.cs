@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -20,7 +21,7 @@ public class Slot : MonoBehaviour, IDropHandler
     public int Column => column;
     public SlotType SlotType => slotType;
     
-    public delegate void CardEvent(int playerIndex, int row, int column);
+    public delegate void CardEvent(string cardStatus, int playerIndex, int row, int column);
     public static CardEvent dropCardEvent;
 
     private void Start()
@@ -93,11 +94,18 @@ public class Slot : MonoBehaviour, IDropHandler
     {
         if (transform.childCount == 0) return;
         
-        dropCardEvent?.Invoke( PhotonNetwork.LocalPlayer.ActorNumber -1, row, column);
+        dropCardEvent?.Invoke( GetComponentInChildren<Card>().Status, PhotonNetwork.LocalPlayer.ActorNumber -1, row, column);
     }
 
-    private void SetCard(int row, int column)
+    private void SetCard(string cardStatus, int row, int column)
     {
-        Debug.Log("NEW CARD" + row + "," + column);
+        if (this.row == row && this.column == column && slotType == SlotType.SharePlace)
+        {
+            var card = CardManager.Instance.CardCreate(cardStatus, false);
+            
+            card.transform.SetParent(transform);
+            card.GetComponent<RectTransform>().localPosition = Vector3.zero;
+            card.transform.localScale = Vector3.one;
+        }
     }
 }

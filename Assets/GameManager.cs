@@ -21,7 +21,7 @@ public class GameManager : Singleton<GameManager>
 
     public int CurrentPlayerIndex => _currentPlayerIndex;
     
-    public delegate void SetCardEvent(int row, int column);
+    public delegate void SetCardEvent(string cardStatus, int row, int column);
     public static SetCardEvent setCardEvent;
 
     private void OnEnable()
@@ -56,7 +56,7 @@ public class GameManager : Singleton<GameManager>
         photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, index);
     }
 
-    private void DropCard(int playerIndex, int row, int column)
+    private void DropCard(string cardStatus, int playerIndex, int row, int column)
     {
         photonView.RPC("SettingSlot", RpcTarget.AllBufferedViaServer, playerIndex, row, column);
     }
@@ -73,7 +73,7 @@ public class GameManager : Singleton<GameManager>
             {
                 for (int j = 0; j < 1; j++)
                 {
-                    photonView.RPC("UpdatedShuffledCards_RPC", RpcTarget.AllBufferedViaServer, CardManager.Instance.NewCard(), i);
+                    photonView.RPC("UpdatedShuffledCards_RPC", RpcTarget.AllBufferedViaServer, CardManager.Instance.GetNewCardStatus(), i);
                 }
             }
 
@@ -99,7 +99,7 @@ public class GameManager : Singleton<GameManager>
     [PunRPC]
     public void UpdatedShuffledCards_RPC(string cardStatus, int index)
     {
-        if (index == PhotonNetwork.LocalPlayer.ActorNumber - 1) CardManager.Instance.NewCardCreate(cardStatus);
+        if (index == PhotonNetwork.LocalPlayer.ActorNumber - 1) CardManager.Instance.CardCreate(cardStatus, true);
     }
 
     [PunRPC]
@@ -114,11 +114,11 @@ public class GameManager : Singleton<GameManager>
     }
     
     [PunRPC]
-    public void SettingSlot(int playerIndex, int row, int column)
+    public void SettingSlot(string cardStatus, int playerIndex, int row, int column)
     {
         if (playerIndex == PhotonNetwork.LocalPlayer.ActorNumber - 1) return;
         
-        setCardEvent?.Invoke(row, column);
+        setCardEvent?.Invoke(cardStatus, row, column);
     }
     
 }
