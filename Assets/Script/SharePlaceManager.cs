@@ -4,34 +4,14 @@ using System.Linq;
 using UnityEngine.UI;
 using Vector2 = System.Numerics.Vector2;
 
-public class CardComparer : IEqualityComparer<Card>
-{
-    public bool Equals(Card x, Card y)
-    {
-        return x.CardGuid == y.CardGuid;
-    }
-
-    public int GetHashCode(Card obj)
-    {
-        return obj.CardGuid.GetHashCode();
-    }
-}
-
-public class PlaceManager : Singleton<PlaceManager>
+public class SharePlaceManager : Singleton<SharePlaceManager>
 {
     [Header("Share Place")]
     [SerializeField] private GameObject sharePlace;
     private List<List<Slot>> _shareSlots = new List<List<Slot>>();
 
-    [SerializeField] private Slot[] sharedSlots;
-
-    [Header("Player Place")]
-    [SerializeField] private PlayerPlace playerPlace;
-    private List<List<Slot>> _playerSlots = new List<List<Slot>>();
-
     [Header("Prefab")]
     [SerializeField] private Slot slotPrefab;
-    [SerializeField] private Line PlayerPlaceLinePrefab;
     [SerializeField] private Line SharePlaceLinePrefab;
 
     private List<GameObject> _previousPlayGround = new List<GameObject>();
@@ -40,22 +20,18 @@ public class PlaceManager : Singleton<PlaceManager>
     private List<Card> difference = new List<Card>();
 
     private int _addSlotCount = 0;
-    
-    public GameObject SharePlace => sharePlace;
-    public Slot[] SharedSlots => sharedSlots;
-    public List<List<Slot>> PlayerSlots => _playerSlots;
-    
+
     public delegate void CardDropEvent();
     public static CardDropEvent cardDropEvent;
-
-    public void InitPlayerPlace(PlayerPlace playerPlace)
+    
+    public void InitSharePlace(GameObject sharePlace)
     {
-        this.playerPlace = playerPlace;
+        this.sharePlace = sharePlace;
 
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 4; i++)
         {
-            var line = Instantiate(PlayerPlaceLinePrefab, playerPlace.transform);
-            _playerSlots.Add(line.Slots);
+            var line = Instantiate(SharePlaceLinePrefab, sharePlace.transform);
+            _shareSlots.Add(line.Slots);
         }
     }
 
@@ -87,6 +63,7 @@ public class PlaceManager : Singleton<PlaceManager>
 
     public void ResetCardList()
     {
+        /*
         _newCardList.Clear();
 
         foreach (var slot in sharedSlots)
@@ -109,7 +86,7 @@ public class PlaceManager : Singleton<PlaceManager>
         {
             Vector2 vector2 = FindEmptyPlayerSlotIndex();
             
-            difference[i].transform.SetParent(_playerSlots[(int)vector2.X][(int)vector2.Y].transform);
+            difference[i].transform.SetParent(_sharePlaceSlots[(int)vector2.X][(int)vector2.Y].transform);
             difference[i].GetComponent<RectTransform>().anchoredPosition = UnityEngine.Vector2.zero;
         }
 
@@ -121,43 +98,13 @@ public class PlaceManager : Singleton<PlaceManager>
                 _previousPlayGround[i].GetComponent<RectTransform>().anchoredPosition = UnityEngine.Vector2.zero;
             }
         }
+        */
         
-    }
-
-    public void CheckPlaceSize()
-    {
-        if (playerPlace.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.x <= 380) return;
-
-        while (true)
-        {
-            int count = 0;
-            for (int i = 0; i < _playerSlots.Count; i++)
-            {
-                if (_playerSlots[i][^1].transform.childCount == 0) 
-                    count++;
-            }
-
-            if (count == 2)
-            {
-                for (int i = 0; i < _playerSlots.Count(); i++)
-                {
-                    UnityEngine.Vector2 size = playerPlace.transform.GetChild(i).GetComponent<RectTransform>().sizeDelta;
-                    size.x -= 38;
-                    playerPlace.transform.GetChild(i).GetComponent<RectTransform>().sizeDelta = size;
-                    
-                    Destroy(_playerSlots[i][^1].gameObject);
-                    _playerSlots[i].RemoveAt(_playerSlots[i].Count - 1);
-                }
-            }
-            else break;
-        }
-        
-        CheckPlaceImageSize();
     }
 
     public void CheckOverlap()
     {
-        CheckOverlap(_playerSlots);
+        CheckOverlap(_shareSlots);
     }
 
     private void CheckOverlap(List<List<Slot>> slot)
@@ -176,12 +123,11 @@ public class PlaceManager : Singleton<PlaceManager>
             
                         if (child != null)
                         {
-                            if (i == 0 && j == slot[i].Count - 1) child.SetParent(slot[1][0].transform);
-                            else if (i == 1 && j == slot[i].Count - 1)
+                            if (i == slot.Count - 1 && j == slot[i].Count - 1)
                             {
-                                Vector2 vector2 = FindEmptyPlayerSlotIndex();
-                                child.SetParent(slot[(int)vector2.X][(int)vector2.Y].transform);
+                                child.SetParent(slot[0][0].transform);
                             }
+                            else if (j == slot[i].Count - 1) child.SetParent(slot[i+1][0].transform);
                             else child.SetParent(slot[i][j+1].transform);
 
                             child.localPosition = Vector3.zero;
@@ -245,72 +191,6 @@ public class PlaceManager : Singleton<PlaceManager>
             sharePlace.GetComponent<RectTransform>().localScale = Vector3.one;
             sharePlace.GetComponent<RectTransform>().localScale *=
                 608 / x;
-        }
-    }
-
-    public void PlayerPlaceExpansion()
-    {
-        for (int i = 0; i < 2; i++)
-        {
-            UnityEngine.Vector2 size = playerPlace.transform.GetChild(i).GetComponent<RectTransform>().sizeDelta;
-            size.x += 38;
-            playerPlace.transform.GetChild(i).GetComponent<RectTransform>().sizeDelta = size;
-            
-            Transform pos = _playerSlots[i][^1].transform;
-            var slot = Instantiate(slotPrefab, playerPlace.transform.GetChild(i).GetComponent<RectTransform>().transform);
-            slot.transform.localPosition = pos.localPosition + new Vector3(38, 0,0);
-            
-            _playerSlots[i].Add(slot);
-        }
-
-        CheckPlaceImageSize();
-    }
-
-    public Vector2 FindEmptyPlayerSlotIndex()
-    {
-        int index1 = 100;
-        int index2 = 100;
-
-        for (int j = 0; j < _playerSlots.Count; j++)
-        {
-            for (int k = 0; k < _playerSlots[j].Count; k++)
-            {
-                if (_playerSlots[j][k].transform.childCount == 0)
-                {
-                    index1 = j;
-                    index2 = k;
-                    return new Vector2(index1, index2);
-                }   
-            }
-        }
-        
-        return new Vector2(index1, index2);
-    }
-
-    private void CheckPlaceImageSize()
-    {
-        if (playerPlace.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.x > 570)
-        {
-            playerPlace.Image.enabled = true;
-            
-            for (int i = 0; i < 2; i++)
-            {
-                playerPlace.transform.GetChild(i).GetComponent<Image>().enabled = false;
-                float x = playerPlace.transform.GetChild(i).GetComponent<RectTransform>().sizeDelta.x;
-                playerPlace.transform.GetChild(i).GetComponent<RectTransform>().localScale = Vector3.one;
-                playerPlace.transform.GetChild(i).GetComponent<RectTransform>().localScale *=
-                    570 / x;   
-            }
-        }
-        else
-        {
-            playerPlace.Image.enabled = false;
-
-            for (int i = 0; i < 2; i++)
-            {
-                playerPlace.transform.GetChild(i).GetComponent<Image>().enabled = true;
-                playerPlace.transform.GetChild(i).GetComponent<RectTransform>().localScale = Vector3.one;
-            }
         }
     }
 }

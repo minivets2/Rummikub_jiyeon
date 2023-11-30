@@ -81,7 +81,7 @@ public class GameManager : Singleton<GameManager>
 
             for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
             {
-                for (int j = 0; j < 1; j++)
+                for (int j = 0; j < 12; j++)
                 {
                     photonView.RPC("UpdatedShuffledCards_RPC", RpcTarget.AllBufferedViaServer, CardManager.Instance.GetNewCardStatus(), i);
                 }

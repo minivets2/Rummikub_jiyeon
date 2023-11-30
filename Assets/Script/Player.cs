@@ -47,7 +47,7 @@ public class Player : MonoBehaviour
         this.playerIndex = playerIndex;
         playerID.text = RoomManager.Instance.playerId;
         playerImage.sprite = RoomManager.Instance.playerImage;
-        PlaceManager.Instance.InitPlayerPlace(playerPlace);
+        PlayerPlaceManager.Instance.InitPlayerPlace(playerPlace);
         _startTurn = false;
         slider.maxValue = 10;
     }

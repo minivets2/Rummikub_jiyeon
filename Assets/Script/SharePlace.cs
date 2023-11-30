@@ -12,6 +12,8 @@ public class SharePlace : Place
         transform.parent.SetParent(GameObject.Find("Canvas").transform);
         transform.parent.GetComponent<RectTransform>().localPosition = new Vector3(32, 56,0);
         transform.parent.GetComponent<RectTransform>().localScale = Vector3.one;
+        
+        SharePlaceManager.Instance.InitSharePlace(gameObject);
     }
 
     public bool CheckComplete()
@@ -19,18 +21,18 @@ public class SharePlace : Place
         _previousPlayGround.Clear();
         element.Clear();
 
-        for (int i = 0; i < PlaceManager.Instance.SharedSlots.Length; i++)
+        for (int i = 0; i < PlayerPlaceManager.Instance.SharedSlots.Length; i++)
         {
-            if (PlaceManager.Instance.SharedSlots[i].transform.childCount > 0)
+            if (PlayerPlaceManager.Instance.SharedSlots[i].transform.childCount > 0)
             {
-                Transform child = PlaceManager.Instance.SharedSlots[i].transform.GetChild(0);
+                Transform child = PlayerPlaceManager.Instance.SharedSlots[i].transform.GetChild(0);
 
                 if (child != null)
                 {
                     element.Add(child.GetComponent<Card>());
                 }
             }
-            else if (PlaceManager.Instance.SharedSlots[i].transform.childCount == 0 || i == PlaceManager.Instance.SharedSlots.Length - 1)
+            else if (PlayerPlaceManager.Instance.SharedSlots[i].transform.childCount == 0 || i == PlayerPlaceManager.Instance.SharedSlots.Length - 1)
             {
                 if (element.Count > 0)
                 {

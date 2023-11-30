@@ -43,13 +43,13 @@ public class PlayerPlace : Place
     {
         _cards.Clear();
 
-        for (int i = 0; i < PlaceManager.Instance.PlayerSlots.Count; i++)
+        for (int i = 0; i < PlayerPlaceManager.Instance.PlayerSlots.Count; i++)
         {
-            for (int j = 0; j < PlaceManager.Instance.PlayerSlots[i].Count; j++)
+            for (int j = 0; j < PlayerPlaceManager.Instance.PlayerSlots[i].Count; j++)
             {
-                if (PlaceManager.Instance.PlayerSlots[i][j].transform.childCount > 0)
+                if (PlayerPlaceManager.Instance.PlayerSlots[i][j].transform.childCount > 0)
                 {
-                    GameObject child = PlaceManager.Instance.PlayerSlots[i][j].transform.GetChild(0).gameObject;
+                    GameObject child = PlayerPlaceManager.Instance.PlayerSlots[i][j].transform.GetChild(0).gameObject;
                     if (child != null) _cards.Add(child);
                 }
             }
@@ -167,17 +167,17 @@ public class PlayerPlace : Place
             count++;
         }
 
-        for (int i = 0; i < (count - PlaceManager.Instance.PlayerSlots[0].Count * 2) / 2; i++)
+        for (int i = 0; i < (count - PlayerPlaceManager.Instance.PlayerSlots[0].Count * 2) / 2; i++)
         {
-            PlaceManager.Instance.PlayerPlaceExpansion();
+            PlayerPlaceManager.Instance.PlayerPlaceExpansion();
         }
 
         while (true)
         {
-            if (count - PlaceManager.Instance.PlayerSlots[0].Count * 2 <= 0)
+            if (count - PlayerPlaceManager.Instance.PlayerSlots[0].Count * 2 <= 0)
                 break;
             
-            PlaceManager.Instance.PlayerPlaceExpansion();
+            PlayerPlaceManager.Instance.PlayerPlaceExpansion();
         }
         
         int index = 0;
@@ -185,14 +185,14 @@ public class PlayerPlace : Place
         {
             for (int j = 0; j < _matchCards[i].Count; j++)
             {
-                if (index < PlaceManager.Instance.PlayerSlots[0].Count)
+                if (index < PlayerPlaceManager.Instance.PlayerSlots[0].Count)
                 {
-                    _matchCards[i][j].transform.SetParent(PlaceManager.Instance.PlayerSlots[0][index].transform);
+                    _matchCards[i][j].transform.SetParent(PlayerPlaceManager.Instance.PlayerSlots[0][index].transform);
                     _matchCards[i][j].GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
                 }
                 else
                 {
-                    _matchCards[i][j].transform.SetParent(PlaceManager.Instance.PlayerSlots[1][index - PlaceManager.Instance.PlayerSlots[0].Count].transform);
+                    _matchCards[i][j].transform.SetParent(PlayerPlaceManager.Instance.PlayerSlots[1][index - PlayerPlaceManager.Instance.PlayerSlots[0].Count].transform);
                     _matchCards[i][j].GetComponent<RectTransform>().anchoredPosition = Vector2.zero;   
                 }
 

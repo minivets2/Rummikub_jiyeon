@@ -36,7 +36,7 @@ public class Slot : MonoBehaviour, IDropHandler
     {
         //추후에 카드 정렬 완료 했을때 이벤트로 수정
         Player.endTurnEvent += SetMoveComplete;
-        PlaceManager.cardDropEvent += CheckCard;
+        SharePlaceManager.cardDropEvent += CheckCard;
         GameManager.dropCardEvent += DropCard;
         GameManager.destroyCardEvent += DestroyCard;
     }
@@ -44,7 +44,7 @@ public class Slot : MonoBehaviour, IDropHandler
     private void OnDisable()
     {
         Player.endTurnEvent -= SetMoveComplete;
-        PlaceManager.cardDropEvent -= CheckCard;
+        SharePlaceManager.cardDropEvent -= CheckCard;
         GameManager.dropCardEvent -= DropCard;
         GameManager.destroyCardEvent -= DestroyCard;
     }
@@ -70,8 +70,9 @@ public class Slot : MonoBehaviour, IDropHandler
         _otherCardTransform.localPosition = Vector3.zero;
         _otherCardTransform.GetComponent<RectTransform>().localScale = Vector3.one;
         
-        PlaceManager.Instance.CheckOverlap();
-        PlaceManager.Instance.CheckPlaceSize();
+        PlayerPlaceManager.Instance.CheckOverlap();
+        PlayerPlaceManager.Instance.CheckPlaceSize();
+        SharePlaceManager.Instance.CheckOverlap();
     }
 
     private int FindChildIndex()

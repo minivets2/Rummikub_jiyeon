@@ -55,7 +55,7 @@ public class CardManager : Singleton<CardManager>
         if (isNewCard)
         {
             Vector2 vector2 = GetFrontPosition();
-            card.transform.SetParent(PlaceManager.Instance.PlayerSlots[(int)vector2.X][(int)vector2.Y].transform);
+            card.transform.SetParent(PlayerPlaceManager.Instance.PlayerSlots[(int)vector2.X][(int)vector2.Y].transform);
         }
         else
         {
@@ -75,11 +75,11 @@ public class CardManager : Singleton<CardManager>
 
         while (true)
         {
-            frontPosition = PlaceManager.Instance.FindEmptyPlayerSlotIndex();
+            frontPosition = PlayerPlaceManager.Instance.FindEmptyPlayerSlotIndex();
             
             if ((int)frontPosition.X == 100)
             {
-                PlaceManager.Instance.PlayerPlaceExpansion();
+                PlayerPlaceManager.Instance.PlayerPlaceExpansion();
             }
             else
             {
