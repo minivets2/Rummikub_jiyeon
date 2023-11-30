@@ -97,6 +97,8 @@ public class Slot : MonoBehaviour, IDropHandler
 
     private void CheckCard()
     {
+        if (slotType == SlotType.PlayerPlace) return;
+
         if (transform.childCount == 0)
         {
             destroyCardEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber -1, row, column);
