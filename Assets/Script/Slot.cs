@@ -122,7 +122,7 @@ public class Slot : MonoBehaviour, IDropHandler
     {
         if (this.row == row && this.column == column && slotType == SlotType.SharePlace && transform.childCount == 1)
         {
-            Destroy(transform.GetChild(0));
+            Destroy(transform.GetChild(0).gameObject);
         }
     }
 }

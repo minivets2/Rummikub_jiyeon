@@ -63,12 +63,12 @@ public class GameManager : Singleton<GameManager>
 
     private void DropCard(string cardStatus, int playerIndex, int row, int column)
     {
-        photonView.RPC("SettingSlot", RpcTarget.AllBufferedViaServer, cardStatus,playerIndex, row, column);
+        photonView.RPC("DropCard_RPC", RpcTarget.AllBufferedViaServer, cardStatus,playerIndex, row, column);
     }
 
     private void DestroyCard(int playerIndex, int row, int column)
     {
-        photonView.RPC("SettingSlot", RpcTarget.AllBufferedViaServer,playerIndex, row, column);
+        photonView.RPC("Destroy_RPC", RpcTarget.AllBufferedViaServer,playerIndex, row, column);
     }
 
     private void StuffThattMasterClientDoes()
@@ -124,7 +124,7 @@ public class GameManager : Singleton<GameManager>
     }
     
     [PunRPC]
-    public void SettingSlot(string cardStatus, int playerIndex, int row, int column)
+    public void DropCard_RPC(string cardStatus, int playerIndex, int row, int column)
     {
         if (playerIndex == PhotonNetwork.LocalPlayer.ActorNumber - 1) return;
         
@@ -132,7 +132,7 @@ public class GameManager : Singleton<GameManager>
     }
     
     [PunRPC]
-    public void SettingSlot(int playerIndex, int row, int column)
+    public void Destroy_RPC(int playerIndex, int row, int column)
     {
         if (playerIndex == PhotonNetwork.LocalPlayer.ActorNumber - 1) return;
         
