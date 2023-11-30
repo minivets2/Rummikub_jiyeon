@@ -1,15 +1,26 @@
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Vector2 = System.Numerics.Vector2;
 
+public enum SlotType
+{
+    PlayerPlace,
+    SharePlace
+}
+
 public class Slot : MonoBehaviour, IDropHandler
 {
+    [SerializeField] private SlotType slotType;
     [SerializeField] private int lineIndex;
     public Transform otherCardTransform; 
     public int LineIndex => lineIndex;
     
     public void OnDrop(PointerEventData eventData)
     {
+        if (slotType == SlotType.SharePlace &&
+            GameManager.Instance.CurrentPlayerIndex != PhotonNetwork.LocalPlayer.ActorNumber - 1) return;
+
         otherCardTransform = eventData.pointerDrag.transform;
         otherCardTransform.SetParent(transform);
         otherCardTransform.localPosition = Vector3.zero;

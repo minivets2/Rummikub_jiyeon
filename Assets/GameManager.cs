@@ -17,6 +17,9 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private GameObject sharePlace;
     
     private int _startPlayerIndex;
+    private int _currentPlayerIndex;
+
+    public int CurrentPlayerIndex => _currentPlayerIndex;
     
     private void OnEnable()
     {
@@ -38,6 +41,7 @@ public class GameManager : Singleton<GameManager>
 
     private void NextTurn(int index)
     {
+        //새로운 카드 1장 가져가기
         //photonView.RPC("UpdatedShuffledCards_RPC", RpcTarget.AllBufferedViaServer, CardManager.Instance.NewCard(), index);
         
         index++;
@@ -71,6 +75,8 @@ public class GameManager : Singleton<GameManager>
     [PunRPC]
     public void StartTurn(int index)
     {
+        _currentPlayerIndex = index;
+        
         if (index == PhotonNetwork.LocalPlayer.ActorNumber - 1) player.StartTurn();
     }
     
