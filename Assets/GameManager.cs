@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using Photon.Pun;
 using UnityEngine;
@@ -28,14 +29,14 @@ public class GameManager : Singleton<GameManager>
     {
         GameReadyUI.onGameStartEvent += StartGame;
         Player.endTurnEvent += NextTurn;
-        Slot.dropCardEvent += DropCard;
+        SharePlaceManager.cardDropEvent += DropCard;
     }
 
     private void OnDisable()
     {
         GameReadyUI.onGameStartEvent -= StartGame;
         Player.endTurnEvent -= NextTurn;
-        Slot.dropCardEvent -= DropCard;
+        SharePlaceManager.cardDropEvent -= DropCard;
     }
 
     private void StartGame()
@@ -56,14 +57,9 @@ public class GameManager : Singleton<GameManager>
         photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, index);
     }
 
-    private void DropCard(string cardStatus, int playerIndex, int row, int column)
+    private void DropCard(int playerIndex, List<SlotStatus> slotStatusList)
     {
-        photonView.RPC("DropCard_RPC", RpcTarget.AllBufferedViaServer, cardStatus,playerIndex, row, column);
-    }
-
-    private void DestroyCard(int playerIndex, int row, int column)
-    {
-        photonView.RPC("Destroy_RPC", RpcTarget.AllBufferedViaServer,playerIndex, row, column);
+        photonView.RPC("DropCard_RPC", RpcTarget.AllBufferedViaServer, playerIndex, slotStatusList);
     }
 
     private void StuffThattMasterClientDoes()
@@ -119,11 +115,14 @@ public class GameManager : Singleton<GameManager>
     }
     
     [PunRPC]
-    public void DropCard_RPC(string cardStatus, int playerIndex, int row, int column)
+    public void DropCard_RPC(int playerIndex, List<SlotStatus> slotStatusList)
     {
         if (playerIndex == PhotonNetwork.LocalPlayer.ActorNumber - 1) return;
-        
-        dropCardEvent?.Invoke(cardStatus, row, column);
+
+        for (int i = 0; i < slotStatusList.Count; i++)
+        {
+            dropCardEvent?.Invoke(slotStatusList[i].CardStatus, slotStatusList[i].Row, slotStatusList[i].Column);
+        }
     }
 
 }

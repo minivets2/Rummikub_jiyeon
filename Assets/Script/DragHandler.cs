@@ -22,8 +22,6 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (GetComponent<Card>().MoveComplete) return;
-
         _beginDragSlot = _rectTransform.parent;
         _beginDragLine = _beginDragSlot.parent;
         _beginDragSlotSiblingIndex = _beginDragSlot.GetSiblingIndex();

@@ -3,6 +3,13 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+public struct SlotStatus
+{
+    public int Row;
+    public int Column;
+    public string CardStatus;
+}
+
 public enum SlotType
 {
     PlayerPlace,
@@ -20,9 +27,6 @@ public class Slot : MonoBehaviour, IDropHandler
     public int Row => row;
     public int Column => column;
     public SlotType SlotType => slotType;
-    
-    public delegate void DropCardEvent(string cardStatus, int playerIndex, int row, int column);
-    public static DropCardEvent dropCardEvent;
 
     private void Start()
     {
@@ -33,14 +37,12 @@ public class Slot : MonoBehaviour, IDropHandler
     {
         //추후에 카드 정렬 완료 했을때 이벤트로 수정
         Player.endTurnEvent += SetMoveComplete;
-        SharePlaceManager.cardDropEvent += CheckCard;
         GameManager.dropCardEvent += DropCard;
     }
 
     private void OnDisable()
     {
         Player.endTurnEvent -= SetMoveComplete;
-        SharePlaceManager.cardDropEvent -= CheckCard;
         GameManager.dropCardEvent -= DropCard;
     }
 
@@ -91,24 +93,29 @@ public class Slot : MonoBehaviour, IDropHandler
         this.row = row;
     }
 
-    private void CheckCard()
+    public SlotStatus GetSlotStatus()
+    {
+        SlotStatus st;
+        st.Row = row;
+        st.Column = column;
+        st.CardStatus = "";
+
+        if (transform.childCount == 1)
+            st.CardStatus = transform.GetChild(0).GetComponent<Card>().Status;
+
+        return st;
+    }
+
+    private void DropCard(string cardStatus, int row, int column)
     {
         if (slotType == SlotType.PlayerPlace) return;
 
         if (transform.childCount == 1)
         {
-            dropCardEvent?.Invoke(GetComponentInChildren<Card>().Status, PhotonNetwork.LocalPlayer.ActorNumber -1, row, column);   
-        }
-    }
-
-    private void DropCard(string cardStatus, int row, int column)
-    {
-        if (slotType == SlotType.SharePlace && transform.childCount == 1)
-        {
             Destroy(transform.GetChild(0).gameObject);
         }
         
-        if (this.row == row && this.column == column && slotType == SlotType.SharePlace)
+        if (this.row == row && this.column == column && cardStatus != "")
         {
             var card = CardManager.Instance.CardCreate(cardStatus, false);
             

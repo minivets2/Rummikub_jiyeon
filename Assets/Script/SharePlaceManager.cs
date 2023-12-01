@@ -1,8 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine.UI;
-using Vector2 = System.Numerics.Vector2;
+using Photon.Pun;
 
 public class SharePlaceManager : Singleton<SharePlaceManager>
 {
@@ -21,7 +19,7 @@ public class SharePlaceManager : Singleton<SharePlaceManager>
 
     private int _addSlotCount = 0;
 
-    public delegate void CardDropEvent();
+    public delegate void CardDropEvent(int playerIndex, List<SlotStatus> slotStatusList);
     public static CardDropEvent cardDropEvent;
     
     public void InitSharePlace(GameObject sharePlace)
@@ -139,8 +137,23 @@ public class SharePlaceManager : Singleton<SharePlaceManager>
 
             if (count == 0) break;
         }
+
+        SetSlotStatus();
+    }
+
+    private void SetSlotStatus()
+    {
+        List<SlotStatus> slotStatusList = new List<SlotStatus>();
         
-        cardDropEvent?.Invoke();
+        for (int i = 0; i < _shareSlots.Count; i++)
+        {
+            for (int j = 0; j < _shareSlots[i].Count; j++)
+            {
+                slotStatusList.Add(_shareSlots[i][j].GetSlotStatus());
+            }
+        }
+        
+        cardDropEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber - 1, slotStatusList);
     }
 
     public void SharePlaceExpansion()
