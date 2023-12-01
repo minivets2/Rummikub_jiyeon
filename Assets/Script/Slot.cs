@@ -127,7 +127,7 @@ public class Slot : MonoBehaviour, IDropHandler
 
     private void DestroyCard(int row, int column)
     {
-        if (this.row == row && this.column == column && transform.childCount == 1)
+        if (this.row == row && this.column == column && transform.childCount == 1 && slotType == SlotType.SharePlace)
         {
             Destroy(transform.GetChild(0).gameObject);
         }
