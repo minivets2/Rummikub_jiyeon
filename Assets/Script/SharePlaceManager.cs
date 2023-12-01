@@ -121,6 +121,8 @@ public class SharePlaceManager : Singleton<SharePlaceManager>
                 _previousPlayGround[i].GetComponent<RectTransform>().anchoredPosition = UnityEngine.Vector2.zero;
             }
         }
+        
+        SetSlotStatus();
     }
 
     public void CheckOverlap()
