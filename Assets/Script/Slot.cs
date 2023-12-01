@@ -108,20 +108,21 @@ public class Slot : MonoBehaviour, IDropHandler
 
     private void DropCard(string cardStatus, int row, int column)
     {
-        if (slotType == SlotType.PlayerPlace) return;
-
-        if (transform.childCount == 1)
+        if (slotType == SlotType.SharePlace && this.row == row && this.column == this.column)
         {
-            Destroy(transform.GetChild(0).gameObject);
-        }
+            if (transform.childCount == 1)
+            {
+                Destroy(transform.GetChild(0).gameObject);
+            }
         
-        if (this.row == row && this.column == column && cardStatus != "")
-        {
-            var card = CardManager.Instance.CardCreate(cardStatus, false);
+            if (this.row == row && this.column == column && cardStatus != "")
+            {
+                var card = CardManager.Instance.CardCreate(cardStatus, false);
             
-            card.transform.SetParent(transform);
-            card.GetComponent<RectTransform>().localPosition = Vector3.zero;
-            card.transform.localScale = Vector3.one;
+                card.transform.SetParent(transform);
+                card.GetComponent<RectTransform>().localPosition = Vector3.zero;
+                card.transform.localScale = Vector3.one;
+            }   
         }
     }
 }
