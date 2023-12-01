@@ -17,6 +17,19 @@ public class CardComparer : IEqualityComparer<Card>
     }
 }
 
+public class SlotComparer : IEqualityComparer<Card>
+{
+    public bool Equals(Card x, Card y)
+    {
+        return x.ComparerSameSlot(y);
+    }
+
+    public int GetHashCode(Card obj)
+    {
+        return obj.GetSlotRowColumn().GetHashCode();
+    }
+}
+
 public class PlayerPlaceManager : Singleton<PlayerPlaceManager>
 {
     [Header("Share Place")]

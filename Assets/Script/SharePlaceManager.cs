@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using Photon.Pun;
+using Vector2 = System.Numerics.Vector2;
 
 public class SharePlaceManager : Singleton<SharePlaceManager>
 {
@@ -15,13 +17,23 @@ public class SharePlaceManager : Singleton<SharePlaceManager>
     private List<GameObject> _previousPlayGround = new List<GameObject>();
     private List<Card> _previousCardList = new List<Card>();
     private List<Card> _newCardList = new List<Card>();
-    private List<Card> difference = new List<Card>();
+    private List<Card> _difference = new List<Card>();
 
     private int _addSlotCount = 0;
 
     public delegate void CardDropEvent(int playerIndex, string cardStatus, int row, int column);
     public static CardDropEvent cardDropEvent;
-    
+
+    private void OnEnable()
+    {
+        Player.resetEvent += ResetCardList;
+    }
+
+    private void OnDisable()
+    {
+        Player.resetEvent -= ResetCardList;
+    }
+
     public void InitSharePlace(GameObject sharePlace)
     {
         this.sharePlace = sharePlace;
@@ -35,69 +47,80 @@ public class SharePlaceManager : Singleton<SharePlaceManager>
 
     public void SaveCardList()
     {
-        /*
         _previousPlayGround.Clear();
         _previousCardList.Clear();
 
-        foreach (var slot in sharedSlots)
+        for (int i = 0; i < _shareSlots.Count; i++)
         {
-            if (slot.transform.childCount > 0)
+            for (int j = 0; j < _shareSlots[i].Count; j++)
             {
-                Transform child = slot.transform.GetChild(0);
-
-                if (child != null)
+                if (_shareSlots[i][j].transform.childCount > 0)
                 {
-                    _previousPlayGround.Add(child.gameObject);
-                    _previousCardList.Add(child.gameObject.GetComponent<Card>());
+                    Transform child = _shareSlots[i][j].transform.GetChild(0);
+
+                    if (child != null)
+                    {
+                        _previousPlayGround.Add(child.gameObject);
+                        _previousCardList.Add(child.gameObject.GetComponent<Card>());
+                    }
+                }
+                else
+                {
+                    _previousPlayGround.Add(null);
                 }
             }
-            else
-            {
-                _previousPlayGround.Add(null);
-            }
         }
-        */
     }
 
     public void ResetCardList()
     {
-        /*
         _newCardList.Clear();
 
-        foreach (var slot in sharedSlots)
+        for (int i = 0; i < _shareSlots.Count; i++)
         {
-            if (slot.transform.childCount > 0)
+            for (int j = 0; j < _shareSlots[i].Count; j++)
             {
-                Transform child = slot.transform.GetChild(0);
-
-                if (child != null)
+                if (_shareSlots[i][j].transform.childCount > 0)
                 {
-                    _newCardList.Add(child.gameObject.GetComponent<Card>());
+                    Transform child = _shareSlots[i][j].transform.GetChild(0);
+
+                    if (child != null)
+                    {
+                        _newCardList.Add(child.gameObject.GetComponent<Card>());
+                    }
                 }
             }
         }
 
         CardComparer comparer = new CardComparer();
-        difference = _newCardList.Except(_previousCardList, comparer).ToList();
+        _difference = _newCardList.Except(_previousCardList, comparer).ToList(); 
 
-        for (int i = 0; i < difference.Count; i++)
+        for (int i = 0; i < _difference.Count; i++)
         {
-            Vector2 vector2 = FindEmptyPlayerSlotIndex();
+            Vector2 vector2 = PlayerPlaceManager.Instance.FindEmptyPlayerSlotIndex();
             
-            difference[i].transform.SetParent(_sharePlaceSlots[(int)vector2.X][(int)vector2.Y].transform);
-            difference[i].GetComponent<RectTransform>().anchoredPosition = UnityEngine.Vector2.zero;
+            _difference[i].transform.SetParent(PlayerPlaceManager.Instance.PlayerSlots[(int)vector2.X][(int)vector2.Y].transform);
+            _difference[i].GetComponent<RectTransform>().anchoredPosition = UnityEngine.Vector2.zero;
+        }
+        
+        List<Slot> slots = new List<Slot>();
+
+        for (int i = 0; i < _shareSlots.Count(); i++)
+        {
+            for (int j = 0; j < _shareSlots[i].Count; j++)
+            {
+                slots.Add(_shareSlots[i][j]);
+            }
         }
 
         for (int i = 0; i < _previousPlayGround.Count; i++)
         {
             if (_previousPlayGround[i] != null)
             {
-                _previousPlayGround[i].transform.SetParent(sharedSlots[i].transform);
+                _previousPlayGround[i].transform.SetParent(slots[i].transform);
                 _previousPlayGround[i].GetComponent<RectTransform>().anchoredPosition = UnityEngine.Vector2.zero;
             }
         }
-        */
-        
     }
 
     public void CheckOverlap()

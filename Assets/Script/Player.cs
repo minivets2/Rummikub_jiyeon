@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     [SerializeField] private TMP_Text textNumber;
     [SerializeField] private Slider slider;
     [SerializeField] private PlayerPlace playerPlace;
+    [SerializeField] private Button resetButton;
     [SerializeField] private Button newCardButton;
 
     private PhotonView _photonView;
@@ -25,6 +26,9 @@ public class Player : MonoBehaviour
     public static StartTurnEvent startTurnEvent;
     public delegate void EndTurnEvent(int index);
     public static EndTurnEvent endTurnEvent;
+    
+    public delegate void ResetEvent();
+    public static ResetEvent resetEvent;
 
     private void Update()
     {
@@ -59,8 +63,10 @@ public class Player : MonoBehaviour
         countTimePanel.SetActive(true);
         textNumber.text = Mathf.FloorToInt(_countTime).ToString();
         slider.value = Mathf.FloorToInt(_countTime);
+        resetButton.gameObject.SetActive(true);
         newCardButton.interactable = true;
         startTurnEvent?.Invoke();
+        SharePlaceManager.Instance.SaveCardList();
     }
     
     public void EndTurn()
@@ -69,6 +75,7 @@ public class Player : MonoBehaviour
         _startTurn = false;
         countTimePanel.SetActive(false);
         slider.value = Mathf.FloorToInt(_countTime);
+        resetButton.gameObject.SetActive(false);
         newCardButton.interactable = false;
     }
 
@@ -76,6 +83,11 @@ public class Player : MonoBehaviour
     {
         EndTurn();
         endTurnEvent?.Invoke(playerIndex);
+    }
+    
+    public void ResetButtonClick()
+    {
+        resetEvent?.Invoke();
     }
     
     

@@ -3,6 +3,7 @@ using TMPro;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using Vector2 = System.Numerics.Vector2;
 
 public enum CardColorType
 {
@@ -89,5 +90,28 @@ public class Card : MonoBehaviour
     public void SetMoveComplete(bool value)
     {
         moveComplete = value;
+    }
+
+    public Vector2 GetSlotRowColumn()
+    {
+        int row = 0;
+        int column = 0;
+        
+        if (transform.parent.GetComponent<Slot>())
+        {
+            var parent = transform.parent;
+            row = parent.GetComponent<Slot>().Row;
+            column = parent.GetComponent<Slot>().Column;
+        }
+
+        return new Vector2(row, column);
+    }
+
+    public bool ComparerSameSlot(Card comparerCard)
+    {
+        if (GetSlotRowColumn() == comparerCard.GetSlotRowColumn())
+            return true;
+
+        return false;
     }
 }
