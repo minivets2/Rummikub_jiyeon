@@ -57,9 +57,9 @@ public class GameManager : Singleton<GameManager>
         photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, index);
     }
 
-    private void DropCard(int playerIndex, List<SlotStatus> slotStatusList)
+    private void DropCard(int playerIndex, string cardStatus, int row, int column)
     {
-        photonView.RPC("DropCard_RPC", RpcTarget.AllBufferedViaServer, playerIndex, slotStatusList);
+        photonView.RPC("DropCard_RPC", RpcTarget.AllBufferedViaServer, playerIndex, cardStatus, row, column);
     }
 
     private void StuffThattMasterClientDoes()
@@ -115,14 +115,11 @@ public class GameManager : Singleton<GameManager>
     }
     
     [PunRPC]
-    public void DropCard_RPC(int playerIndex, List<SlotStatus> slotStatusList)
+    public void DropCard_RPC(int playerIndex, string cardStatus, int row, int column)
     {
         if (playerIndex == PhotonNetwork.LocalPlayer.ActorNumber - 1) return;
 
-        for (int i = 0; i < slotStatusList.Count; i++)
-        {
-            dropCardEvent?.Invoke(slotStatusList[i].CardStatus, slotStatusList[i].Row, slotStatusList[i].Column);
-        }
+        dropCardEvent?.Invoke(cardStatus, row, column);
     }
 
 }

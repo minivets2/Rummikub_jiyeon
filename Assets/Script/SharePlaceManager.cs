@@ -19,7 +19,7 @@ public class SharePlaceManager : Singleton<SharePlaceManager>
 
     private int _addSlotCount = 0;
 
-    public delegate void CardDropEvent(int playerIndex, List<SlotStatus> slotStatusList);
+    public delegate void CardDropEvent(int playerIndex, string cardStatus, int row, int column);
     public static CardDropEvent cardDropEvent;
     
     public void InitSharePlace(GameObject sharePlace)
@@ -149,11 +149,10 @@ public class SharePlaceManager : Singleton<SharePlaceManager>
         {
             for (int j = 0; j < _shareSlots[i].Count; j++)
             {
-                slotStatusList.Add(_shareSlots[i][j].GetSlotStatus());
+                SlotStatus slotStatus = _shareSlots[i][j].GetSlotStatus();
+                cardDropEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber - 1, slotStatus.CardStatus, slotStatus.Row, slotStatus.Column);
             }
         }
-        
-        cardDropEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber - 1, slotStatusList);
     }
 
     public void SharePlaceExpansion()
