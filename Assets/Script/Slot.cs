@@ -122,6 +122,8 @@ public class Slot : MonoBehaviour, IDropHandler
                 card.transform.SetParent(transform);
                 card.GetComponent<RectTransform>().localPosition = Vector3.zero;
                 card.transform.localScale = Vector3.one;
+                
+                Debug.Log(row +","+column);
             }   
         }
     }

@@ -143,8 +143,6 @@ public class SharePlaceManager : Singleton<SharePlaceManager>
 
     private void SetSlotStatus()
     {
-        List<SlotStatus> slotStatusList = new List<SlotStatus>();
-        
         for (int i = 0; i < _shareSlots.Count; i++)
         {
             for (int j = 0; j < _shareSlots[i].Count; j++)
