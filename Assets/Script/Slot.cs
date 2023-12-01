@@ -37,12 +37,14 @@ public class Slot : MonoBehaviour, IDropHandler
     {
         //추후에 카드 정렬 완료 했을때 이벤트로 수정
         Player.endTurnEvent += SetMoveComplete;
+        GameManager.destroyCardEvent += DestroyCard;
         GameManager.dropCardEvent += DropCard;
     }
 
     private void OnDisable()
     {
         Player.endTurnEvent -= SetMoveComplete;
+        GameManager.destroyCardEvent -= DestroyCard;
         GameManager.dropCardEvent -= DropCard;
     }
 
@@ -123,9 +125,13 @@ public class Slot : MonoBehaviour, IDropHandler
         }
     }
 
-    public void InitSlot()
+    private void DestroyCard(int row, int column)
     {
-        if (transform.childCount == 1)
+        if (this.row == row && this.column == column && transform.childCount == 1)
+        {
             Destroy(transform.GetChild(0).gameObject);
+        }
     }
+    
+    
 }

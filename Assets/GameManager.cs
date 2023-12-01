@@ -22,6 +22,8 @@ public class GameManager : Singleton<GameManager>
 
     public int CurrentPlayerIndex => _currentPlayerIndex;
     
+    public delegate void DestroyCardEvent(int row, int column);
+    public static DestroyCardEvent destroyCardEvent;
     public delegate void DropCardEvent(string cardStatus, int row, int column);
     public static DropCardEvent dropCardEvent;
 
@@ -119,6 +121,7 @@ public class GameManager : Singleton<GameManager>
     {
         if (playerIndex == PhotonNetwork.LocalPlayer.ActorNumber - 1) return;
 
+        destroyCardEvent?.Invoke(row, column);
         dropCardEvent?.Invoke(cardStatus, row, column);
     }
 
