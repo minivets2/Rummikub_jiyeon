@@ -110,7 +110,6 @@ public class Slot : MonoBehaviour, IDropHandler
     {
         if (slotType == SlotType.SharePlace && this.row == row && this.column == this.column)
         {
-
             if (this.row == row && this.column == column && cardStatus != "")
             {
                 var card = CardManager.Instance.CardCreate(cardStatus, false);
@@ -122,5 +121,11 @@ public class Slot : MonoBehaviour, IDropHandler
                 Debug.Log(row +","+column);
             }   
         }
+    }
+
+    public void InitSlot()
+    {
+        if (transform.childCount == 1)
+            Destroy(transform.GetChild(0).gameObject);
     }
 }

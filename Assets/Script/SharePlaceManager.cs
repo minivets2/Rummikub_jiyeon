@@ -148,6 +148,7 @@ public class SharePlaceManager : Singleton<SharePlaceManager>
             for (int j = 0; j < _shareSlots[i].Count; j++)
             {
                 SlotStatus slotStatus = _shareSlots[i][j].GetSlotStatus();
+                _shareSlots[i][j].InitSlot();
                 cardDropEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber - 1, slotStatus.CardStatus, slotStatus.Row, slotStatus.Column);
             }
         }
