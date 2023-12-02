@@ -43,6 +43,7 @@ public class PlayerPlace : Place
     private void GetSlotList()
     {
         _cards.Clear();
+        _jokerCards.Clear();
 
         for (int i = 0; i < PlayerPlaceManager.Instance.PlayerSlots.Count; i++)
         {
@@ -156,23 +157,17 @@ public class PlayerPlace : Place
         int count = 0;
         for (int i = 0; i < _matchCards.Count; i++)
         {
-            for (int j = 0; j < _matchCards[i].Count; j++)
-            {
+            for (int j = 0; j < _matchCards[i].Count + _jokerCards.Count; j++)
                 count++;
-            }
-            
+
             count++;
         }
 
         if (count % 2 != 0)
-        {
             count++;
-        }
 
         for (int i = 0; i < (count - PlayerPlaceManager.Instance.PlayerSlots[0].Count * 2) / 2; i++)
-        {
             PlayerPlaceManager.Instance.PlayerPlaceExpansion();
-        }
 
         while (true)
         {
@@ -201,6 +196,25 @@ public class PlayerPlace : Place
                 index++;
             }
 
+            if ((index + 1) % PlayerPlaceManager.Instance.PlayerSlots[0].Count != 0)
+                index++;
+        }
+
+        index--;
+
+        for (int i = 0; i < _jokerCards.Count; i++)
+        {
+            if (index < PlayerPlaceManager.Instance.PlayerSlots[0].Count)
+            {
+                _jokerCards[i].transform.SetParent(PlayerPlaceManager.Instance.PlayerSlots[0][index].transform);
+                _jokerCards[i].GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+            }
+            else
+            {
+                _jokerCards[i].transform.SetParent(PlayerPlaceManager.Instance.PlayerSlots[1][index - PlayerPlaceManager.Instance.PlayerSlots[0].Count].transform);
+                _jokerCards[i].GetComponent<RectTransform>().anchoredPosition = Vector2.zero;   
+            }
+            
             index++;
         }
     }
