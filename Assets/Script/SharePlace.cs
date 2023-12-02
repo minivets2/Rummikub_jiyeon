@@ -33,6 +33,7 @@ public class SharePlace : Place
     {
         element.Clear();
         bool isComplete = false;
+        int cardCount = 0;
 
         List<Slot> slots = SharePlaceManager.Instance.GetAllSlots();
 
@@ -45,6 +46,7 @@ public class SharePlace : Place
                 if (child != null)
                 {
                     element.Add(child.GetComponent<Card>());
+                    cardCount++;
                 }
             }
             else if (slots[i].transform.childCount == 0 || i == slots.Count - 1)
@@ -67,7 +69,7 @@ public class SharePlace : Place
             }
         }
 
-        if (isComplete)
+        if (isComplete && (cardCount != SharePlaceManager.Instance.PreviousCardCount))
         {
             endTurnEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber - 1, false);
         }

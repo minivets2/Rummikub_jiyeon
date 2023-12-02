@@ -20,6 +20,9 @@ public class SharePlaceManager : Singleton<SharePlaceManager>
     private List<Card> _difference = new List<Card>();
 
     private int _addSlotCount = 0;
+    private int _previousCardCount;
+
+    public int PreviousCardCount => _previousCardCount;
 
     public delegate void CardDropEvent(int playerIndex, string cardStatus, int row, int column);
     public static CardDropEvent cardDropEvent;
@@ -49,6 +52,7 @@ public class SharePlaceManager : Singleton<SharePlaceManager>
     {
         _previousPlayGround.Clear();
         _previousCardList.Clear();
+        _previousCardCount = 0;
 
         for (int i = 0; i < _shareSlots.Count; i++)
         {
@@ -62,6 +66,7 @@ public class SharePlaceManager : Singleton<SharePlaceManager>
                     {
                         _previousPlayGround.Add(child.gameObject);
                         _previousCardList.Add(child.gameObject.GetComponent<Card>());
+                        _previousCardCount++;
                     }
                 }
                 else
