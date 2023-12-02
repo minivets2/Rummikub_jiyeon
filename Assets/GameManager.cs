@@ -6,9 +6,9 @@ public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private Player player;
     [SerializeField] private PhotonView photonView;
+    [SerializeField] private WinnerUI winnerUI;
 
     [Header("Init")]
-    [SerializeField] private Transform sharePlacePosition;
     [SerializeField] private Transform playerPosition;
 
     [Header("Prefab")]
@@ -28,14 +28,16 @@ public class GameManager : Singleton<GameManager>
     private void OnEnable()
     {
         GameReadyUI.onGameStartEvent += StartGame;
-        SharePlace.endTurnEvent += NextTurn;
+        SharePlace.endGameEvent += EndGame;
+        SharePlace.nextTurnEvent += NextTurn;
         SharePlaceManager.cardDropEvent += DropCard;
     }
 
     private void OnDisable()
     {
         GameReadyUI.onGameStartEvent -= StartGame;
-        SharePlace.endTurnEvent -= NextTurn;
+        SharePlace.endGameEvent -= EndGame;
+        SharePlace.nextTurnEvent -= NextTurn;
         SharePlaceManager.cardDropEvent -= DropCard;
     }
 
@@ -81,6 +83,11 @@ public class GameManager : Singleton<GameManager>
             photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
             photonView.RPC("EndTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
         }
+    }
+
+    private void EndGame(int playerIndex, string winnerID)
+    {
+        photonView.RPC("EndGame_RPC", RpcTarget.AllBufferedViaServer, playerIndex, winnerID);
     }
     
     [PunRPC]
@@ -131,6 +138,17 @@ public class GameManager : Singleton<GameManager>
 
         destroyCardEvent?.Invoke(row, column);
         dropCardEvent?.Invoke(cardStatus, row, column);
+    }
+
+    [PunRPC]
+    public void EndGame_RPC(int playerIndex, string winnerID)
+    {
+        winnerUI.gameObject.SetActive(true);
+        
+        if (playerIndex == PhotonNetwork.LocalPlayer.ActorNumber - 1)
+            winnerUI.SetWinnerMessage("");
+        else
+            winnerUI.SetWinnerMessage(winnerID);
     }
 
 }

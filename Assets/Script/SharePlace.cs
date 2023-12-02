@@ -6,9 +6,12 @@ public class SharePlace : Place
 {
     private List<List<Card>> _previousPlayGround = new List<List<Card>>();
     private List<Card> element = new List<Card>();
+    
+    public delegate void EndGameEvent(int playerIndex, string winnerID);
+    public static EndGameEvent endGameEvent;
 
-    public delegate void EndTurnEvent(int playerIndex, bool newCard);
-    public static EndTurnEvent endTurnEvent;
+    public delegate void NextTurnEvent(int playerIndex, bool newCard);
+    public static NextTurnEvent nextTurnEvent;
     
     private void Start()
     {
@@ -68,19 +71,24 @@ public class SharePlace : Place
                 }
             }
         }
+        
+        if (isComplete && PlayerPlaceManager.Instance.GetCardCount() == 0)
+        {
+            endGameEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber - 1, RoomManager.Instance.playerId);
+            return;
+        }
 
-        if (isComplete && (cardCount != SharePlaceManager.Instance.PreviousCardCount))
+        if (isComplete)
         {
-            endTurnEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber - 1, false);
+            if (cardCount != SharePlaceManager.Instance.PreviousCardCount)
+                nextTurnEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber - 1, false);
+            else
+                nextTurnEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber - 1, true);
         }
-        else if (isComplete && (cardCount == SharePlaceManager.Instance.PreviousCardCount))
-        {
-            endTurnEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber - 1, true);
-        }
-        else if (!isComplete)
+        else
         {
             SharePlaceManager.Instance.ResetCardList();
-            endTurnEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber - 1, true);
+            nextTurnEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber - 1, true);
         }
     }
 }

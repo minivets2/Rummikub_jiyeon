@@ -35,14 +35,14 @@ public class Slot : MonoBehaviour, IDropHandler
     private void OnEnable()
     {
         //추후에 카드 정렬 완료 했을때 이벤트로 수정
-        SharePlace.endTurnEvent += SetMoveComplete;
+        SharePlace.nextTurnEvent += SetMoveComplete;
         GameManager.destroyCardEvent += DestroyCard;
         GameManager.dropCardEvent += DropCard;
     }
 
     private void OnDisable()
     {
-        SharePlace.endTurnEvent -= SetMoveComplete;
+        SharePlace.nextTurnEvent -= SetMoveComplete;
         GameManager.destroyCardEvent -= DestroyCard;
         GameManager.dropCardEvent -= DropCard;
     }
