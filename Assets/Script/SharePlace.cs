@@ -73,7 +73,7 @@ public class SharePlace : Place
         {
             endTurnEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber - 1, false);
         }
-        else
+        else if (!isComplete)
         {
             SharePlaceManager.Instance.ResetCardList();
             endTurnEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber - 1, true);
