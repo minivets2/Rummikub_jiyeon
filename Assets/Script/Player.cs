@@ -53,7 +53,7 @@ public class Player : MonoBehaviour
         playerImage.sprite = RoomManager.Instance.playerImage;
         PlayerPlaceManager.Instance.InitPlayerPlace(playerPlace);
         _startTurn = false;
-        slider.maxValue = 10;
+        slider.maxValue = 30;
     }
 
     public void StartTurn()
