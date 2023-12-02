@@ -1,12 +1,15 @@
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
 public class SharePlace : Place
 {
     private List<List<Card>> _previousPlayGround = new List<List<Card>>();
     private List<Card> element = new List<Card>();
-    private bool _test;
 
+    public delegate void EndTurnEvent(int playerIndex, bool newCard);
+    public static EndTurnEvent endTurnEvent;
+    
     private void Start()
     {
         transform.parent.SetParent(GameObject.Find("Canvas").transform);
@@ -16,43 +19,62 @@ public class SharePlace : Place
         SharePlaceManager.Instance.InitSharePlace(gameObject);
     }
 
-    public bool CheckComplete()
+    private void OnEnable()
     {
-        _previousPlayGround.Clear();
-        element.Clear();
+        Player.checkCompleteEvent += CheckComplete;
+    }
 
-        for (int i = 0; i < PlayerPlaceManager.Instance.SharedSlots.Length; i++)
+    private void OnDisable()
+    {
+        Player.checkCompleteEvent -= CheckComplete;
+    }
+
+    public void CheckComplete()
+    {
+        element.Clear();
+        bool isComplete = false;
+
+        List<Slot> slots = SharePlaceManager.Instance.GetAllSlots();
+
+        for (int i = 0; i < slots.Count; i++)
         {
-            if (PlayerPlaceManager.Instance.SharedSlots[i].transform.childCount > 0)
+            if (slots[i].transform.childCount > 0)
             {
-                Transform child = PlayerPlaceManager.Instance.SharedSlots[i].transform.GetChild(0);
+                Transform child = slots[i].transform.GetChild(0);
 
                 if (child != null)
                 {
                     element.Add(child.GetComponent<Card>());
                 }
             }
-            else if (PlayerPlaceManager.Instance.SharedSlots[i].transform.childCount == 0 || i == PlayerPlaceManager.Instance.SharedSlots.Length - 1)
+            else if (slots[i].transform.childCount == 0 || i == slots.Count - 1)
             {
                 if (element.Count > 0)
                 {
                     if (element.Count < 3)
                     {
-                        _test = false;
-                        return _test;
+                        isComplete = false;
+                        break;
                     }
    
                     if ((AllNumbersEqual(element) && AllColorsDifferent(element)) ||
                         AllColorsEqual(element) && AreConsecutive(element))
                     {
-                        _previousPlayGround.Add(element);
+                        isComplete = true;
                         element.Clear();
                     }
                 }
             }
         }
 
-        _test = true;
-        return _test;
+        if (isComplete)
+        {
+            endTurnEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber - 1, false);
+        }
+        else
+        {
+            SharePlaceManager.Instance.ResetCardList();
+            endTurnEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber - 1, true);
+        }
     }
 }

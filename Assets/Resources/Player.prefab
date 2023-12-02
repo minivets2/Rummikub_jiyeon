@@ -913,6 +913,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _image: {fileID: 3296432519255441076}
   _cards: []
+  _jokerCards: []
 --- !u!114 &3296432519255441077
 MonoBehaviour:
   m_ObjectHideFlags: 0

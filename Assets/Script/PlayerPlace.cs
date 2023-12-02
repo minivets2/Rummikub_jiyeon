@@ -7,6 +7,7 @@ public class PlayerPlace : Place
 {
     [SerializeField] private Image _image;
     [SerializeField] private List<GameObject> _cards = new List<GameObject>();
+    [SerializeField] private List<GameObject> _jokerCards = new List<GameObject>();
     private List<List<GameObject>> _matchCards = new List<List<GameObject>>();
 
     public Image Image => _image;
@@ -50,7 +51,8 @@ public class PlayerPlace : Place
                 if (PlayerPlaceManager.Instance.PlayerSlots[i][j].transform.childCount > 0)
                 {
                     GameObject child = PlayerPlaceManager.Instance.PlayerSlots[i][j].transform.GetChild(0).gameObject;
-                    if (child != null) _cards.Add(child);
+                    if (child != null && child.GetComponent<Card>().Number != 20) _cards.Add(child);
+                    else if (child != null && child.GetComponent<Card>().Number == 20) _jokerCards.Add(child);
                 }
             }
         }

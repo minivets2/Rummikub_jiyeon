@@ -17,26 +17,11 @@ public class CardComparer : IEqualityComparer<Card>
     }
 }
 
-public class SlotComparer : IEqualityComparer<Card>
-{
-    public bool Equals(Card x, Card y)
-    {
-        return x.ComparerSameSlot(y);
-    }
-
-    public int GetHashCode(Card obj)
-    {
-        return obj.GetSlotRowColumn().GetHashCode();
-    }
-}
-
 public class PlayerPlaceManager : Singleton<PlayerPlaceManager>
 {
     [Header("Share Place")]
     [SerializeField] private GameObject sharePlace;
     private List<List<Slot>> _shareSlots = new List<List<Slot>>();
-
-    [SerializeField] private Slot[] sharedSlots;
 
     [Header("Player Place")]
     [SerializeField] private PlayerPlace playerPlace;
@@ -55,7 +40,6 @@ public class PlayerPlaceManager : Singleton<PlayerPlaceManager>
     private int _addSlotCount = 0;
     
     public GameObject SharePlace => sharePlace;
-    public Slot[] SharedSlots => sharedSlots;
     public List<List<Slot>> PlayerSlots => _playerSlots;
 
     public void InitPlayerPlace(PlayerPlace playerPlace)
@@ -68,72 +52,7 @@ public class PlayerPlaceManager : Singleton<PlayerPlaceManager>
             _playerSlots.Add(line.Slots);
         }
     }
-
-    public void SaveCardList()
-    {
-        /*
-        _previousPlayGround.Clear();
-        _previousCardList.Clear();
-
-        foreach (var slot in sharedSlots)
-        {
-            if (slot.transform.childCount > 0)
-            {
-                Transform child = slot.transform.GetChild(0);
-
-                if (child != null)
-                {
-                    _previousPlayGround.Add(child.gameObject);
-                    _previousCardList.Add(child.gameObject.GetComponent<Card>());
-                }
-            }
-            else
-            {
-                _previousPlayGround.Add(null);
-            }
-        }
-        */
-    }
-
-    public void ResetCardList()
-    {
-        _newCardList.Clear();
-
-        foreach (var slot in sharedSlots)
-        {
-            if (slot.transform.childCount > 0)
-            {
-                Transform child = slot.transform.GetChild(0);
-
-                if (child != null)
-                {
-                    _newCardList.Add(child.gameObject.GetComponent<Card>());
-                }
-            }
-        }
-
-        CardComparer comparer = new CardComparer();
-        difference = _newCardList.Except(_previousCardList, comparer).ToList();
-
-        for (int i = 0; i < difference.Count; i++)
-        {
-            Vector2 vector2 = FindEmptyPlayerSlotIndex();
-            
-            difference[i].transform.SetParent(_playerSlots[(int)vector2.X][(int)vector2.Y].transform);
-            difference[i].GetComponent<RectTransform>().anchoredPosition = UnityEngine.Vector2.zero;
-        }
-
-        for (int i = 0; i < _previousPlayGround.Count; i++)
-        {
-            if (_previousPlayGround[i] != null)
-            {
-                _previousPlayGround[i].transform.SetParent(sharedSlots[i].transform);
-                _previousPlayGround[i].GetComponent<RectTransform>().anchoredPosition = UnityEngine.Vector2.zero;
-            }
-        }
-        
-    }
-
+    
     public void CheckPlaceSize()
     {
         if (playerPlace.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.x <= 380) return;

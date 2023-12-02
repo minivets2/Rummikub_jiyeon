@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq.Expressions;
 using Photon.Pun;
 using UnityEngine;
 using Random = System.Random;
@@ -30,14 +28,14 @@ public class GameManager : Singleton<GameManager>
     private void OnEnable()
     {
         GameReadyUI.onGameStartEvent += StartGame;
-        Player.endTurnEvent += NextTurn;
+        SharePlace.endTurnEvent += NextTurn;
         SharePlaceManager.cardDropEvent += DropCard;
     }
 
     private void OnDisable()
     {
         GameReadyUI.onGameStartEvent -= StartGame;
-        Player.endTurnEvent -= NextTurn;
+        SharePlace.endTurnEvent -= NextTurn;
         SharePlaceManager.cardDropEvent -= DropCard;
     }
 
@@ -47,16 +45,16 @@ public class GameManager : Singleton<GameManager>
         StuffThattMasterClientDoes();
     }
 
-    private void NextTurn(int index)
+    private void NextTurn(int playerIndex, bool newCard)
     {
-        //새로운 카드 1장 가져가기
-        //photonView.RPC("UpdatedShuffledCards_RPC", RpcTarget.AllBufferedViaServer, CardManager.Instance.NewCard(), index);
-        
-        index++;
+        if (newCard)
+            photonView.RPC("UpdatedNewCard", RpcTarget.AllBufferedViaServer, playerIndex);
 
-        if (PhotonNetwork.PlayerList.Length == index) index = 0;
+        playerIndex++;
 
-        photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, index);
+        if (PhotonNetwork.PlayerList.Length == playerIndex) playerIndex = 0;
+
+        photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, playerIndex);
     }
 
     private void DropCard(int playerIndex, string cardStatus, int row, int column)
@@ -84,6 +82,16 @@ public class GameManager : Singleton<GameManager>
             photonView.RPC("EndTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
         }
     }
+    
+    [PunRPC]
+    public void UpdatedNewCard(int playerIndex)
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("UpdatedShuffledCards_RPC", RpcTarget.AllBufferedViaServer, CardManager.Instance.GetNewCardStatus(), playerIndex);
+        }
+    }
+    
 
     [PunRPC]
     public void StartTurn(int index)

@@ -1,5 +1,4 @@
 using Photon.Pun;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -36,19 +35,19 @@ public class Slot : MonoBehaviour, IDropHandler
     private void OnEnable()
     {
         //추후에 카드 정렬 완료 했을때 이벤트로 수정
-        Player.endTurnEvent += SetMoveComplete;
+        SharePlace.endTurnEvent += SetMoveComplete;
         GameManager.destroyCardEvent += DestroyCard;
         GameManager.dropCardEvent += DropCard;
     }
 
     private void OnDisable()
     {
-        Player.endTurnEvent -= SetMoveComplete;
+        SharePlace.endTurnEvent -= SetMoveComplete;
         GameManager.destroyCardEvent -= DestroyCard;
         GameManager.dropCardEvent -= DropCard;
     }
 
-    private void SetMoveComplete(int index)
+    private void SetMoveComplete(int playerIndex, bool newCard)
     {
         if (transform.childCount == 1 && slotType == SlotType.SharePlace)
         {

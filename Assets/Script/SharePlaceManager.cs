@@ -101,17 +101,10 @@ public class SharePlaceManager : Singleton<SharePlaceManager>
             
             _difference[i].transform.SetParent(PlayerPlaceManager.Instance.PlayerSlots[(int)vector2.X][(int)vector2.Y].transform);
             _difference[i].GetComponent<RectTransform>().anchoredPosition = UnityEngine.Vector2.zero;
+            _difference[i].GetComponent<RectTransform>().localScale = Vector3.one;
         }
-        
-        List<Slot> slots = new List<Slot>();
 
-        for (int i = 0; i < _shareSlots.Count(); i++)
-        {
-            for (int j = 0; j < _shareSlots[i].Count; j++)
-            {
-                slots.Add(_shareSlots[i][j]);
-            }
-        }
+        List<Slot> slots = GetAllSlots();
 
         for (int i = 0; i < _previousPlayGround.Count; i++)
         {
@@ -119,6 +112,7 @@ public class SharePlaceManager : Singleton<SharePlaceManager>
             {
                 _previousPlayGround[i].transform.SetParent(slots[i].transform);
                 _previousPlayGround[i].GetComponent<RectTransform>().anchoredPosition = UnityEngine.Vector2.zero;
+                _previousPlayGround[i].GetComponent<RectTransform>().localScale = Vector3.one;
             }
         }
         
@@ -227,6 +221,21 @@ public class SharePlaceManager : Singleton<SharePlaceManager>
             sharePlace.GetComponent<RectTransform>().localScale *=
                 608 / x;
         }
+    }
+    
+    public List<Slot> GetAllSlots()
+    {
+        List<Slot> slots = new List<Slot>();
+
+        for (int i = 0; i < _shareSlots.Count(); i++)
+        {
+            for (int j = 0; j < _shareSlots[i].Count; j++)
+            {
+                slots.Add(_shareSlots[i][j]);
+            }
+        }
+
+        return slots;
     }
 }
 

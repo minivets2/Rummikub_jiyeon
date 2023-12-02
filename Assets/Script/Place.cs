@@ -23,21 +23,17 @@ public class Place : MonoBehaviour
 
         for (int i = 0; i < list.Count; i++)
         {
-            if (list[i].Number != 20)
-            {
-                firstValue = list[i].Number;
-                index = i;
-                break;
-            }
+            if (list[i].Number == 20) continue;
+            
+            firstValue = list[i].Number;
+            index = i;
+            break;
         }
 
         for (int i = index + 1; i < list.Count; i++)
         {
-            if (list[i].Number == 20)
-            {
-                continue;
-            }
-            
+            if (list[i].Number == 20) continue;
+
             if (list[i].Number != firstValue)
             {
                 return false;
@@ -49,11 +45,23 @@ public class Place : MonoBehaviour
     
     public bool AllColorsEqual(List<Card> list)
     {
-        CardColorType firstValue = list[0].ColorType;
+        CardColorType firstColors = list[0].ColorType;
+        int index = 0;
 
-        for (int i = 1; i < list.Count; i++)
+        for (int i = 0; i < list.Count; i++)
         {
-            if (list[i].ColorType != firstValue)
+            if (list[i].Number == 20) continue;
+            
+            firstColors = list[i].ColorType;
+            index = i;
+            break;
+        }
+
+        for (int i = index + 1; i < list.Count; i++)
+        {
+            if (list[i].Number == 20) continue;
+            
+            if (list[i].ColorType != firstColors)
             {
                 return false;
             }
@@ -64,15 +72,26 @@ public class Place : MonoBehaviour
     
     public bool AllColorsDifferent(List<Card> list)
     {
+        List<CardColorType> colors = new List<CardColorType>();
+        int index = 0;
+
         for (int i = 0; i < list.Count; i++)
         {
-            for (int j = i + 1; j < list.Count; j++)
-            {
-                if (list[i].ColorType == list[j].ColorType)
-                {
-                    return false;
-                }
-            }
+            if (list[i].Number == 20) continue;
+            
+            colors.Add(list[i].ColorType);
+            index = i;
+            break;
+        }
+
+        for (int i = index + 1; i < list.Count; i++)
+        {
+            if (list[i].Number == 20) continue;
+
+            if (colors.Contains(list[i].ColorType))
+                return false;
+            
+            colors.Add(list[i].ColorType);
         }
 
         return true;
@@ -80,12 +99,26 @@ public class Place : MonoBehaviour
     
     public bool AreConsecutive(List<Card> list)
     {
-        for (int i = 1; i < list.Count; i++)
+        int number = 0;
+        int index = 0;
+
+        for (int i = 0; i < list.Count; i++)
         {
-            if (list[i].Number != list[i - 1].Number + 1)
-            {
+            if (list[i].Number == 20) continue;
+            
+            number = list[i].Number;
+            index = i;
+            break;
+        }
+        
+        for (int i = index + 1; i < list.Count; i++)
+        {
+            if (list[i].Number == 20) continue;
+            
+            if (list[i].Number != number + 1)
                 return false;
-            }
+            
+            number = list[i].Number;
         }
 
         return true;

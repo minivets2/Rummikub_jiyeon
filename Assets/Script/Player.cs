@@ -24,11 +24,12 @@ public class Player : MonoBehaviour
     
     public delegate void StartTurnEvent();
     public static StartTurnEvent startTurnEvent;
-    public delegate void EndTurnEvent(int index);
-    public static EndTurnEvent endTurnEvent;
-    
+
     public delegate void ResetEvent();
     public static ResetEvent resetEvent;
+    
+    public delegate void CheckCompleteEvent();
+    public static CheckCompleteEvent checkCompleteEvent;
 
     private void Update()
     {
@@ -40,8 +41,7 @@ public class Player : MonoBehaviour
 
             if (_countTime > slider.maxValue)
             {
-                EndTurn();
-                endTurnEvent?.Invoke(playerIndex);
+                NewCardButtonClick();
             }
         }
     }
@@ -82,7 +82,7 @@ public class Player : MonoBehaviour
     public void NewCardButtonClick()
     {
         EndTurn();
-        endTurnEvent?.Invoke(playerIndex);
+        checkCompleteEvent?.Invoke();
     }
     
     public void ResetButtonClick()
