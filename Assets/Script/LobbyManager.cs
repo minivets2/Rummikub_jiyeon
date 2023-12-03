@@ -59,7 +59,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsConnected && inputField_PlayerId.text.Length != 0 && inputField_PlayerId.text.Length <= 3)
         {
             connectionInfoText.text = "Connecting to Random Room...";
-            RoomManager.Instance.SetPlayerInfomation(inputField_PlayerId.text, roomInformation.GetPlayerImage(), roomInformation.PlayersCount);
+            RoomManager.Instance.SetPlayerInfomation(inputField_PlayerId.text, roomInformation.GetPlayerImage(), roomInformation.PlayersCount, roomInformation.GetImageIndex());
             PhotonNetwork.JoinRandomRoom();
         }
         else if (PhotonNetwork.IsConnected && inputField_PlayerId.text.Length == 0)

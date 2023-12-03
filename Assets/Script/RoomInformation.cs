@@ -20,6 +20,11 @@ public class RoomInformation : MonoBehaviour
     {
         return playerImages[PlayerImageIndex];
     }
+    
+    public int GetImageIndex()
+    {
+        return PlayerImageIndex;
+    }
 
     private void Start()
     {

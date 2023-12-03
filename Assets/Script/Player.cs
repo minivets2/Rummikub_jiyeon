@@ -31,7 +31,7 @@ public class Player : MonoBehaviour
     public delegate void CheckCompleteEvent();
     public static CheckCompleteEvent checkCompleteEvent;
     
-    public delegate void OtherPlayerSettingEvent(int playerIndex, Sprite playerImage, string playerId);
+    public delegate void OtherPlayerSettingEvent(int playerIndex, int playerImageIndex, string playerId);
     public static OtherPlayerSettingEvent otherPlayerSettingEvent;
 
     private void Update()
@@ -57,7 +57,7 @@ public class Player : MonoBehaviour
         PlayerPlaceManager.Instance.InitPlayerPlace(playerPlace);
         _startTurn = false;
         slider.maxValue = 30;
-        otherPlayerSettingEvent?.Invoke(playerIndex, RoomManager.Instance.playerImage, RoomManager.Instance.playerId);
+        otherPlayerSettingEvent?.Invoke(playerIndex, RoomManager.Instance.playerImageIndex, RoomManager.Instance.playerId);
     }
 
     public void StartTurn()

@@ -61,6 +61,7 @@ public class GameManager : Singleton<GameManager>
         if (PhotonNetwork.PlayerList.Length == playerIndex) playerIndex = 0;
 
         photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, playerIndex);
+        photonView.RPC("UpdatedOtherPlayerTurn_RPC", RpcTarget.AllBufferedViaServer, playerIndex);
     }
 
     private void DropCard(int playerIndex, string cardStatus, int row, int column)
@@ -78,7 +79,7 @@ public class GameManager : Singleton<GameManager>
 
             for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
             {
-                for (int j = 0; j < 1; j++)
+                for (int j = 0; j < 12; j++)
                 {
                     photonView.RPC("UpdatedShuffledCards_RPC", RpcTarget.AllBufferedViaServer, CardManager.Instance.GetNewCardStatus(), i);
                 }
@@ -86,12 +87,13 @@ public class GameManager : Singleton<GameManager>
 
             photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
             photonView.RPC("EndTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
+            photonView.RPC("UpdatedOtherPlayerTurn_RPC", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
         }
     }
 
-    private void OtherPlayerSetting(int playerIndex, Sprite playerImage, string playerId)
+    private void OtherPlayerSetting(int playerIndex, int playerImageIndex, string playerId)
     {
-        photonView.RPC("OtherPlayerSetting_RPC", RpcTarget.AllBufferedViaServer, playerIndex, playerImage, playerId);
+        photonView.RPC("OtherPlayerSetting_RPC", RpcTarget.AllBufferedViaServer, playerIndex, playerImageIndex, playerId);
     }
 
     private void EndGame(int playerIndex, string winnerID)
@@ -109,13 +111,18 @@ public class GameManager : Singleton<GameManager>
     }
 
     [PunRPC]
-    public void OtherPlayerSetting_RPC(int playerIndex, Sprite playerImage, string playerId)
+    public void OtherPlayerSetting_RPC(int playerIndex, int playerImageIndex, string playerId)
     {
         if (playerIndex == PhotonNetwork.LocalPlayer.ActorNumber - 1) return;
         
-        otherPlayers.OtherPlayerSetting(playerIndex, playerImage, playerId);
+        otherPlayers.OtherPlayerSetting(playerIndex, playerImageIndex, playerId);
     }
     
+    [PunRPC]
+    public void UpdatedOtherPlayerTurn_RPC(int playerIndex)
+    {
+        otherPlayers.UpdatedOtherPlayerTurn(playerIndex);
+    }
 
     [PunRPC]
     public void StartTurn(int index)
