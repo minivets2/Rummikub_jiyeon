@@ -7,6 +7,8 @@ public class WinnerUI : MonoBehaviour
 
     public void SetWinnerMessage(string winnerID)
     {
+        transform.SetAsLastSibling();
+        
         if (winnerID == "")
             winnerMessage.text = "당신이 승리했습니다!";
         else

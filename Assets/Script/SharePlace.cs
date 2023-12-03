@@ -18,7 +18,6 @@ public class SharePlace : Place
         transform.parent.SetParent(GameObject.Find("Canvas").transform);
         transform.parent.GetComponent<RectTransform>().localPosition = new Vector3(32, 56,0);
         transform.parent.GetComponent<RectTransform>().localScale = Vector3.one;
-        
         SharePlaceManager.Instance.InitSharePlace(gameObject);
     }
 
@@ -72,7 +71,7 @@ public class SharePlace : Place
             }
         }
         
-        if (isComplete && PlayerPlaceManager.Instance.GetCardCount() == 0)
+        if (PlayerPlaceManager.Instance.GetCardCount() == 0)
         {
             endGameEvent?.Invoke(PhotonNetwork.LocalPlayer.ActorNumber - 1, RoomManager.Instance.playerId);
             return;

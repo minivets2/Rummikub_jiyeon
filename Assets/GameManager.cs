@@ -7,6 +7,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private Player player;
     [SerializeField] private PhotonView photonView;
     [SerializeField] private WinnerUI winnerUI;
+    [SerializeField] private OtherPlayers otherPlayers;
 
     [Header("Init")]
     [SerializeField] private Transform playerPosition;
@@ -19,6 +20,7 @@ public class GameManager : Singleton<GameManager>
     private int _currentPlayerIndex;
 
     public int CurrentPlayerIndex => _currentPlayerIndex;
+    public WinnerUI WinnerUI => winnerUI;
     
     public delegate void DestroyCardEvent(int row, int column);
     public static DestroyCardEvent destroyCardEvent;
@@ -31,6 +33,7 @@ public class GameManager : Singleton<GameManager>
         SharePlace.endGameEvent += EndGame;
         SharePlace.nextTurnEvent += NextTurn;
         SharePlaceManager.cardDropEvent += DropCard;
+        Player.otherPlayerSettingEvent += OtherPlayerSetting;
     }
 
     private void OnDisable()
@@ -39,6 +42,7 @@ public class GameManager : Singleton<GameManager>
         SharePlace.endGameEvent -= EndGame;
         SharePlace.nextTurnEvent -= NextTurn;
         SharePlaceManager.cardDropEvent -= DropCard;
+        Player.otherPlayerSettingEvent -= OtherPlayerSetting;
     }
 
     private void StartGame()
@@ -74,7 +78,7 @@ public class GameManager : Singleton<GameManager>
 
             for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
             {
-                for (int j = 0; j < 12; j++)
+                for (int j = 0; j < 1; j++)
                 {
                     photonView.RPC("UpdatedShuffledCards_RPC", RpcTarget.AllBufferedViaServer, CardManager.Instance.GetNewCardStatus(), i);
                 }
@@ -83,6 +87,11 @@ public class GameManager : Singleton<GameManager>
             photonView.RPC("StartTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
             photonView.RPC("EndTurn", RpcTarget.AllBufferedViaServer, _startPlayerIndex);
         }
+    }
+
+    private void OtherPlayerSetting(int playerIndex, Sprite playerImage, string playerId)
+    {
+        photonView.RPC("OtherPlayerSetting_RPC", RpcTarget.AllBufferedViaServer, playerIndex, playerImage, playerId);
     }
 
     private void EndGame(int playerIndex, string winnerID)
@@ -97,6 +106,14 @@ public class GameManager : Singleton<GameManager>
         {
             photonView.RPC("UpdatedShuffledCards_RPC", RpcTarget.AllBufferedViaServer, CardManager.Instance.GetNewCardStatus(), playerIndex);
         }
+    }
+
+    [PunRPC]
+    public void OtherPlayerSetting_RPC(int playerIndex, Sprite playerImage, string playerId)
+    {
+        if (playerIndex == PhotonNetwork.LocalPlayer.ActorNumber - 1) return;
+        
+        otherPlayers.OtherPlayerSetting(playerIndex, playerImage, playerId);
     }
     
 
@@ -143,12 +160,12 @@ public class GameManager : Singleton<GameManager>
     [PunRPC]
     public void EndGame_RPC(int playerIndex, string winnerID)
     {
-        winnerUI.gameObject.SetActive(true);
-        
         if (playerIndex == PhotonNetwork.LocalPlayer.ActorNumber - 1)
             winnerUI.SetWinnerMessage("");
         else
             winnerUI.SetWinnerMessage(winnerID);
+        
+        winnerUI.gameObject.SetActive(true);
     }
 
 }
